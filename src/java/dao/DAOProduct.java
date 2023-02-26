@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DAOProduct extends DAOEntity<Product> {
+    
+    public static final String DEFAULT_ORDER_BY = " ORDER BY Product.cateID ASC";
 
     @Override
     public int add(Product product) {

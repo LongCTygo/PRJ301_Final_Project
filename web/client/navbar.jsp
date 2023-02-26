@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    String current = (String) request.getParameter("current");
+    String go = (String) request.getParameter("go");
 %>
 <!DOCTYPE html>
 <html>
@@ -27,7 +27,7 @@
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                         <jsp:include page="navigationLogin.jsp">
-                            <jsp:param name="current" value="<%=current%>"></jsp:param>
+                            <jsp:param name="current" value="<%=go%>"></jsp:param>
                         </jsp:include>
                     </nav>
                 </div>

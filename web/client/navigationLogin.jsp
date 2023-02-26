@@ -6,7 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    String current = (String) request.getParameter("current");
+    String go = (String) request.getParameter("go");
+    System.out.println(go);
 %>
 <!DOCTYPE html>
 <html>
@@ -17,17 +18,17 @@
     <body>
         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
             <div class="navbar-nav mr-auto py-0">
-                <a href="index.html" class="nav-item nav-link <%if (current.equals("home")){%>active<%}%>">Home</a>
-                <a href="shop.html" class="nav-item nav-link <%if (current.equals("shop")){%>active<%}%>">Shop</a>
-                <a href="detail.html" class="nav-item nav-link <%if (current.equals("detail")){%>active<%}%>">Shop Detail</a>
+                <a href="ClientController?go=home" class="nav-item nav-link <%if (go.equals("home")){%>active<%}%>">Home</a>
+                <a href="ClientController?go=listShop" class="nav-item nav-link <%if (go.equals("listShop")){%>active<%}%>">Shop</a>
+                <a href="ClientController?go=detail" class="nav-item nav-link <%if (go.equals("detail")){%>active<%}%>">Shop Detail</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu rounded-0 m-0">
-                        <a href="cart.html" class="dropdown-item <%if (current.equals("cart")){%>active<%}%>">Shopping Cart</a>
-                        <a href="checkout.html" class="dropdown-item <%if (current.equals("checkout")){%>active<%}%>">Checkout</a>
+                        <a href="ClientController?go=cart" class="dropdown-item <%if (go.equals("cart")){%>active<%}%>">Shopping Cart</a>
+                        <a href="ClientController?go=checkout" class="dropdown-item <%if (go.equals("checkout")){%>active<%}%>">Checkout</a>
                     </div>
                 </div>
-                <a href="contact.html" class="nav-item nav-link <%if (current.equals("contact")){%>active<%}%>">Contact</a>
+                <a href="ClientController?go=contact" class="nav-item nav-link <%if (go.equals("contact")){%>active<%}%>">Contact</a>
             </div>
             
             <!-- Login -->

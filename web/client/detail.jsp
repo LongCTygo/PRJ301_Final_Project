@@ -56,7 +56,7 @@
 
             <!-- Navbar Start -->
         <jsp:include page="navbar.jsp">
-            <jsp:param name="current" value="shop"></jsp:param>
+            <jsp:param name="go" value='<%=(String)request.getAttribute("go")%>'></jsp:param>
         </jsp:include>
         <!-- Navbar End -->
 

@@ -25,9 +25,9 @@ import java.util.Vector;
  */
 @WebServlet(name = "ClientController", urlPatterns = {"/ClientController"})
 public class ClientController extends HttpServlet {
-    
+
     public static final String DEFAULT_GO = "listShop";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -45,16 +45,20 @@ public class ClientController extends HttpServlet {
             if (go == null) {
                 go = DEFAULT_GO;
             }
+            request.setAttribute("go", go);
             //List Shop
-            if (go.equals("listShop")){
+            if (go.equals("listShop")) {
                 listShop(request, response);
             }
-            if (go.equals("detail")){
+            if (go.equals("detail")) {
                 detail(request, response);
+            }
+            if (go.equals("home")) {
+                home(request, response);
             }
         }
     }
-    
+
     void dispatch(HttpServletRequest request, HttpServletResponse response, String url)
             throws ServletException, IOException {
         //call jsp
@@ -62,12 +66,35 @@ public class ClientController extends HttpServlet {
                 = request.getRequestDispatcher(url);
         dispatch.forward(request, response);
     }
-    
-    private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+
+    private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DAOProduct daoPro = new DAOProduct();
+        //Initial SQL
+        String sql = "select * from Product join Category on Product.cateID = Category.cateID";
+        //Search
+        String query = request.getParameter("query");
+        if (query == null) {
+            query = "";
+        }
+        sql += String.format(" WHERE Product.pname like '%%%s%%'", query);
+        request.setAttribute("query", query);
+        //Category
+        String cateid = request.getParameter("cateid");
+        if (cateid != null) {
+            try {
+                int id = Integer.parseInt(cateid);
+                sql += String.format(" AND Product.cateid = '%d'", id);
+            } catch (NumberFormatException ex) {
+                ex.printStackTrace();
+            }
+        }
+        //Sorting
+        sql += DAOProduct.DEFAULT_ORDER_BY;
         //list
-        Vector<ProductDisplay> productList = daoPro.getDisplay("select * from Product as a join Category as b on a.cateID = b.cateID ORDER BY a.cateID ASC");
+        Vector<ProductDisplay> productList = daoPro.getDisplay(sql);
         request.setAttribute("productList", productList);
+        //Sort
+
         dispatch(request, response, "client/shop.jsp");
     }
 
@@ -112,24 +139,27 @@ public class ClientController extends HttpServlet {
 
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pid = request.getParameter("pid");
-        if (pid != null){
+        if (pid != null) {
             DAOProduct daoPro = new DAOProduct();
             Vector<ProductDisplay> vector = daoPro.getDisplay(String.format("select * from Product as a join Category as b on a.cateID = b.cateID WHERE pid = '%s'", pid));
-            if (!vector.isEmpty()){
+            if (!vector.isEmpty()) {
                 //Product
                 ProductDisplay pd = vector.get(0);
                 request.setAttribute("product", pd);
                 //Review
                 DAOReview daoRev = new DAOReview();
-                Vector<ReviewDisplay> revVec = daoRev.getDisplay("SELECT * from Review a, Customer b WHERE a.cid = b.cid AND a.pid = '" + pd.getPid() +"'");
+                Vector<ReviewDisplay> revVec = daoRev.getDisplay("SELECT * from Review a, Customer b WHERE a.cid = b.cid AND a.pid = '" + pd.getPid() + "'");
                 request.setAttribute("reviews", revVec);
                 //Suggestions
-                Vector<ProductDisplay> suggestions = daoPro.getDisplay("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != '"+pd.getPid()+"' ORDER By newID()");
+                Vector<ProductDisplay> suggestions = daoPro.getDisplay("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != '" + pd.getPid() + "' ORDER By newID()");
                 request.setAttribute("suggestions", suggestions);
                 dispatch(request, response, "client/detail.jsp");
-                
+
             }
         }
     }
 
+    private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        dispatch(request, response, "client/index.jsp");
+    }
 }

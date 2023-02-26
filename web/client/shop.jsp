@@ -10,6 +10,7 @@
     Vector<ProductDisplay> vector = (Vector<ProductDisplay>) request.getAttribute("productList");
     DAOCategory daoCat = new DAOCategory();
     Vector<Category> catList = daoCat.getAll();
+    String query = (String) request.getAttribute("query");
 %>
 <!DOCTYPE html>
 <html>
@@ -45,7 +46,7 @@
 
             <!-- Navbar Start -->
         <jsp:include page="navbar.jsp">
-            <jsp:param name="current" value="shop"></jsp:param>
+            <jsp:param name="go" value='<%=(String)( request.getAttribute("go") )%>'></jsp:param>
         </jsp:include>
         <!-- Navbar End -->
 
@@ -137,16 +138,20 @@
                         <!-- Search Bar -->
                         <div class="col-12 pb-1">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <form action="">
+                                <form name="searchbar" action="ClientController">
+                                    <input  type="hidden" name="go" value="listShop">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Search by name">
+                                        <input type="text" class="form-control" name="query" placeholder="Search by name" value="<%=query%>">
                                         <div class="input-group-append">
-                                            <span class="input-group-text bg-transparent text-primary">
+                                            <span onclick="searchbar.submit()" class="input-group-text bg-transparent text-primary">
                                                 <i class="fa fa-search"></i>
                                             </span>
                                         </div>
                                     </div>
                                 </form>
+                                <div>
+                                    Total: <%=vector.size()%>
+                                </div>
                                 <div class="dropdown ml-4">
                                     <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
                                             aria-expanded="false">
@@ -184,7 +189,6 @@
                             </div>
                         </div>
                         <%}%>
-
                     </div>
                 </div>
                 <!-- Shop Product End -->
