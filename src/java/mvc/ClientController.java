@@ -107,6 +107,42 @@ public class ClientController extends HttpServlet {
         request.setAttribute("productList", productList);
         dispatch(request, response, "client/shop.jsp");
     }
+    
+    
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        String pid = request.getParameter("pid");
+        if (pid != null) {
+            DAOProduct daoPro = new DAOProduct();
+            //Create statement
+            PreparedStatement statement = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE pid = ?");
+            statement.setString(1, pid);
+            Vector<ProductDisplay> vector = daoPro.getDisplay(statement);
+            if (!vector.isEmpty()) {
+                //Product 
+                ProductDisplay pd = vector.get(0);
+                request.setAttribute("product", pd);
+                //Review
+                DAOReview daoRev = new DAOReview();
+                //review statement
+                PreparedStatement statementRev = daoRev.conn.prepareStatement("SELECT * from Review a, Customer b WHERE a.cid = b.cid AND a.pid = ?");
+                statementRev.setString(1, pid);
+                Vector<ReviewDisplay> revVec = daoRev.getDisplay(statementRev);
+                request.setAttribute("reviews", revVec);
+                //Suggestions
+                PreparedStatement statementSug = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != ? ORDER By newID()");
+                statementSug.setString(1, pid);
+                Vector<ProductDisplay> suggestions = daoPro.getDisplay(statementSug);
+                request.setAttribute("suggestions", suggestions);
+                dispatch(request, response, "client/detail.jsp");
+
+            }
+        }
+    }
+
+    private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        dispatch(request, response, "client/index.jsp");
+        
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -147,37 +183,5 @@ public class ClientController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        String pid = request.getParameter("pid");
-        if (pid != null) {
-            DAOProduct daoPro = new DAOProduct();
-            //Create statement
-            PreparedStatement statement = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE pid = ?");
-            statement.setString(1, pid);
-            Vector<ProductDisplay> vector = daoPro.getDisplay(statement);
-            if (!vector.isEmpty()) {
-                //Product 
-                ProductDisplay pd = vector.get(0);
-                request.setAttribute("product", pd);
-                //Review
-                DAOReview daoRev = new DAOReview();
-                //review statement
-                PreparedStatement statementRev = daoRev.conn.prepareStatement("SELECT * from Review a, Customer b WHERE a.cid = b.cid AND a.pid = ?");
-                statementRev.setString(1, pid);
-                Vector<ReviewDisplay> revVec = daoRev.getDisplay(statementRev);
-                request.setAttribute("reviews", revVec);
-                //Suggestions
-                PreparedStatement statementSug = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != ? ORDER By newID()");
-                statementSug.setString(1, pid);
-                Vector<ProductDisplay> suggestions = daoPro.getDisplay(statementSug);
-                request.setAttribute("suggestions", suggestions);
-                dispatch(request, response, "client/detail.jsp");
-
-            }
-        }
-    }
-
-    private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        dispatch(request, response, "client/index.jsp");
-    }
+    
 }
