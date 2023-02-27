@@ -9,6 +9,11 @@ package entity;
  * @author ADMIN
  */
 public class Review {
+
+    @Override
+    public String toString() {
+        return "Review{" + "cid=" + cid + ", pid=" + pid + ", review=" + review + ", score=" + score + ", date=" + date + '}';
+    }
     
     private String cid;
     private String pid;

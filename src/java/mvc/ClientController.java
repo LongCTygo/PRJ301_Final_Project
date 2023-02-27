@@ -17,7 +17,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,7 +30,7 @@ import java.util.Vector;
 @WebServlet(name = "ClientController", urlPatterns = {"/ClientController"})
 public class ClientController extends HttpServlet {
 
-    public static final String DEFAULT_GO = "listShop";
+    public static final String DEFAULT_GO = "home";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,14 +51,18 @@ public class ClientController extends HttpServlet {
             }
             request.setAttribute("go", go);
             //List Shop
-            if (go.equals("listShop")) {
-                listShop(request, response);
-            }
-            if (go.equals("detail")) {
-                detail(request, response);
-            }
-            if (go.equals("home")) {
-                home(request, response);
+            try {
+                if (go.equals("listShop")) {
+                    listShop(request, response);
+                }
+                if (go.equals("detail")) {
+                    detail(request, response);
+                }
+                if (go.equals("home")) {
+                    home(request, response);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -67,34 +75,36 @@ public class ClientController extends HttpServlet {
         dispatch.forward(request, response);
     }
 
-    private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         DAOProduct daoPro = new DAOProduct();
+        int params = 1;
         //Initial SQL
-        String sql = "select * from Product join Category on Product.cateID = Category.cateID";
+        String sql = "select * from Product join Category on Product.cateID = Category.cateID\n"
+                + "WHERE Product.pname LIKE ? ";
         //Search
         String query = request.getParameter("query");
         if (query == null) {
             query = "";
         }
-        sql += String.format(" WHERE Product.pname like '%%%s%%'", query);
         request.setAttribute("query", query);
         //Category
         String cateid = request.getParameter("cateid");
+        Integer id = null;
         if (cateid != null) {
-            try {
-                int id = Integer.parseInt(cateid);
-                sql += String.format(" AND Product.cateid = '%d'", id);
-            } catch (NumberFormatException ex) {
-                ex.printStackTrace();
-            }
+            id = Integer.parseInt(cateid);
+            sql += " AND Product.cateid = ?";
+            params++;
         }
         //Sorting
         sql += DAOProduct.DEFAULT_ORDER_BY;
-        //list
-        Vector<ProductDisplay> productList = daoPro.getDisplay(sql);
+        //Construct statement
+        PreparedStatement statement = daoPro.conn.prepareStatement(sql);
+        statement.setString(1, "%" + query + "%");
+        if (params >= 2) {
+            statement.setInt(2, id);
+        }
+        Vector<ProductDisplay> productList = daoPro.getDisplay(statement);
         request.setAttribute("productList", productList);
-        //Sort
-
         dispatch(request, response, "client/shop.jsp");
     }
 
@@ -137,21 +147,29 @@ public class ClientController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         String pid = request.getParameter("pid");
         if (pid != null) {
             DAOProduct daoPro = new DAOProduct();
-            Vector<ProductDisplay> vector = daoPro.getDisplay(String.format("select * from Product as a join Category as b on a.cateID = b.cateID WHERE pid = '%s'", pid));
+            //Create statement
+            PreparedStatement statement = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE pid = ?");
+            statement.setString(1, pid);
+            Vector<ProductDisplay> vector = daoPro.getDisplay(statement);
             if (!vector.isEmpty()) {
                 //Product 
                 ProductDisplay pd = vector.get(0);
                 request.setAttribute("product", pd);
                 //Review
                 DAOReview daoRev = new DAOReview();
-                Vector<ReviewDisplay> revVec = daoRev.getDisplay("SELECT * from Review a, Customer b WHERE a.cid = b.cid AND a.pid = '" + pd.getPid() + "'");
+                //review statement
+                PreparedStatement statementRev = daoRev.conn.prepareStatement("SELECT * from Review a, Customer b WHERE a.cid = b.cid AND a.pid = ?");
+                statementRev.setString(1, pid);
+                Vector<ReviewDisplay> revVec = daoRev.getDisplay(statementRev);
                 request.setAttribute("reviews", revVec);
                 //Suggestions
-                Vector<ProductDisplay> suggestions = daoPro.getDisplay("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != '" + pd.getPid() + "' ORDER By newID()");
+                PreparedStatement statementSug = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != ? ORDER By newID()");
+                statementSug.setString(1, pid);
+                Vector<ProductDisplay> suggestions = daoPro.getDisplay(statementSug);
                 request.setAttribute("suggestions", suggestions);
                 dispatch(request, response, "client/detail.jsp");
 

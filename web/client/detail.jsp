@@ -13,11 +13,11 @@
     Vector<ProductDisplay> suggestions = (Vector<ProductDisplay>) request.getAttribute("suggestions");
     //Avg Score
     double avg = 0;
-    for (ReviewDisplay rd : vector){
+    for (ReviewDisplay rd : vector) {
         avg += rd.getScore();
     }
-    if (avg != 0){
-    avg /= vector.size();
+    if (avg != 0) {
+        avg /= vector.size();
     }
 %>
 
@@ -56,33 +56,33 @@
 
             <!-- Navbar Start -->
         <jsp:include page="navbar.jsp">
-            <jsp:param name="go" value='<%=(String)request.getAttribute("go")%>'></jsp:param>
+            <jsp:param name="go" value='<%=(String) request.getAttribute("go")%>'></jsp:param>
         </jsp:include>
         <!-- Navbar End -->
 
 
-            <!-- Page Header Start -->
-            <div class="container-fluid bg-secondary mb-5">
-                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
-                    <h1 class="font-weight-semi-bold text-uppercase mb-3">Shop Detail</h1>
-                    <div class="d-inline-flex">
-                        <p class="m-0"><a href="">Home</a></p>
-                        <p class="m-0 px-2">-</p>
-                        <p class="m-0">Shop Detail</p>
-                    </div>
+        <!-- Page Header Start -->
+        <div class="container-fluid bg-secondary mb-5">
+            <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+                <h1 class="font-weight-semi-bold text-uppercase mb-3">Shop Detail</h1>
+                <div class="d-inline-flex">
+                    <p class="m-0"><a href="">Home</a></p>
+                    <p class="m-0 px-2">-</p>
+                    <p class="m-0">Shop Detail</p>
                 </div>
             </div>
-            <!-- Page Header End -->
+        </div>
+        <!-- Page Header End -->
 
 
-            <!-- Shop Detail Start -->
-            <div class="container-fluid py-5">
-                <div class="row px-xl-5">
-                    <div class="col-lg-5 pb-5">
-                        <div id="product-carousel" class="carousel slide" data-ride="carousel">
-                            <div class="carousel-inner border">
-                                <div class="carousel-item active">
-                                    <img class="w-100 h-100" src="img/<%=p.getImage()%>" alt="Image">
+        <!-- Shop Detail Start -->
+        <div class="container-fluid py-5">
+            <div class="row px-xl-5">
+                <div class="col-lg-5 pb-5">
+                    <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner border">
+                            <div class="carousel-item active">
+                                <img class="w-100 h-100" src="img/<%=p.getImage()%>" alt="Image">
                             </div>
                         </div>
                         <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
@@ -98,7 +98,7 @@
                     <h3 class="font-weight-semi-bold"><%=p.getPname()%></h3>
                     <div class="d-flex mb-3">
                         <div class="text-primary mr-2">
-                            <%printStar(avg,out);%>
+                            <%printStar(avg, out);%>
                         </div>
                         <small class="pt-1">(<%=vector.size()%> Review(s))</small>
                     </div>
@@ -157,13 +157,13 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <h4 class="mb-4"><%=vector.size()%> review(s) for "<%=p.getPname()%>"</h4>
-                                    <% for (ReviewDisplay rd : vector){ %>
+                                    <% for (ReviewDisplay rd : vector) {%>
                                     <div class="media mb-4">
                                         <img src="img/user.jpg" alt="<%=rd.getCname()%>" class="img-fluid mr-3 mt-1" style="width: 45px;">
                                         <div class="media-body">
                                             <h6><%=rd.getCname()%><small> - <i><%=rd.getDate()%></i></small></h6>
                                             <div class="text-primary mb-2">
-                                                <%printStar(rd.getScore(),out);%>
+                                                <%printStar(rd.getScore(), out);%>
                                             </div>
                                             <p><%=rd.getReview()%></p>
                                         </div>
@@ -218,7 +218,7 @@
             <div class="row px-xl-5">
                 <div class="col">
                     <div class="owl-carousel related-carousel">
-                        <% for (ProductDisplay sug : suggestions) { %>
+                        <% for (ProductDisplay sug : suggestions) {%>
                         <div class="card product-item border-0">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                                 <img class="img-fluid w-100" src="img/<%=sug.getImage()%>" alt="">
@@ -226,17 +226,16 @@
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3"><%=sug.getPname()%></h6>
                                 <h6 style="color:red" class="text-truncate mb-3">
-                                    <%if (sug.getQuantity() == 0){%>Sold Out<%}
-                                    else{%>Stock: <%=p.getQuantity()%><%}%>
+                                    <%if (sug.getQuantity() == 0) {%>Sold Out<%} else {%>Stock: <%=p.getQuantity()%><%}%>
                                 </h6>
                                 <div class="d-flex justify-content-center">
                                     <h6><%=sug.getPriceFormat()%></h6>
-                                    <h6 class="text-muted ml-2"><del>$<%=String.format("%02.2f",sug.getPrice()*2)%></del></h6>
+                                    <h6 class="text-muted ml-2"><del>$<%=String.format("%02.2f", sug.getPrice() * 2)%></del></h6>
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <a href="ClientController?go=detail&pid=<%=sug.getPid()%>" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <a href="" class="btn btn-sm text-dark p-0 <%if (sug.getQuantity()==0){%>disabled<%}%>"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                <a href="" class="btn btn-sm text-dark p-0 <%if (sug.getQuantity() == 0) {%>disabled<%}%>"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                             </div>
                         </div>
                         <%}%>
@@ -250,45 +249,45 @@
 
     <!-- Footer Start -->
     <jsp:include page="footer.jsp"></jsp:include>
-    <!-- Footer End -->
+        <!-- Footer End -->
 
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+        <!-- Contact Javascript File -->
+        <script src="mail/jqBootstrapValidation.min.js"></script>
+        <script src="mail/contact.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
-</body>
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
+    </body>
 
 </html>
 
 <%!
-    private void printStar(double score, JspWriter out) throws IOException{
-    int star = (int) Math.round(score);
-    if (star < 0 || star > 10){
-    throw new IllegalStateException("Stars must be between 0 and 10, but got " + star);
+    private void printStar(double score, JspWriter out) throws IOException {
+        int star = (int) Math.round(score);
+        if (star < 0 || star > 10) {
+            throw new IllegalStateException("Stars must be between 0 and 10, but got " + star);
+        }
+        int i = 0;
+        for (; i < (int) (star / 2); i++) {
+            out.print("<i class=\"fas fa-star\"></i>");
+        }
+        if (star % 2 == 1) {
+            out.print("<i class=\"fas fa-star-half-alt\"></i>");
+            ++i;
+        }
+        for (; i < 5; i++) {
+            out.print("<i class=\"far fa-star\"></i>");
+        }
     }
-    int i = 0;
-    for (; i < (int)(star/2); i++){
-        out.print("<i class=\"fas fa-star\"></i>");
-    }
-    if (star%2==1){
-        out.print("<i class=\"fas fa-star-half-alt\"></i>");
-        ++i;
-    }
-    for (;i<5;i++){
-    out.print("<i class=\"far fa-star\"></i>");
-}
-}   
 %>
