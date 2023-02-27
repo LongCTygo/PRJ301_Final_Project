@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DAOProduct extends DAOEntity<Product> {
-    
+
     public static final String DEFAULT_ORDER_BY = " ORDER BY Product.cateID ASC";
 
     @Override
@@ -101,6 +101,7 @@ public class DAOProduct extends DAOEntity<Product> {
     }
 
     @Override
+    @Deprecated
     public Vector<Product> getAll(String sql) {
         Vector<Product> vector = new Vector<>();
         ResultSet rs = this.getData(sql);
@@ -141,13 +142,13 @@ public class DAOProduct extends DAOEntity<Product> {
         return n;
     }
 
-
     @Override
     public Vector<Product> getAll() {
         return getAll("SELECT * from Product");
     }
-    
-    public Vector<ProductDisplay> getDisplay(String sql){
+
+    @Deprecated
+    public Vector<ProductDisplay> getDisplay(String sql) {
         Vector<ProductDisplay> vector = new Vector<>();
         try {
             ResultSet rs = this.getData(sql);
@@ -170,7 +171,53 @@ public class DAOProduct extends DAOEntity<Product> {
         return vector;
     }
     
-    public Vector<ProductDisplay> getDisplay(){
+    public Vector<ProductDisplay> getDisplay(PreparedStatement statement) {
+        Vector<ProductDisplay> vector = new Vector<>();
+        try {
+            ResultSet rs = this.getData(statement);
+            while (rs.next()) {
+                String pid = rs.getString("pid");
+                String Pname = rs.getString("pname");
+                int quantity = rs.getInt("quantity");
+                double price = rs.getDouble("price");
+                String image = rs.getString("image");
+                String description = rs.getString("description");
+                int status = rs.getInt("status");
+                String cate = rs.getString("cateName");
+                int cid = rs.getInt("cateID");
+                ProductDisplay pd = new ProductDisplay(cate, pid, Pname, quantity, price, image, description, status, cid);
+                vector.add(pd);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
+
+    public Vector<ProductDisplay> getDisplay() {
         return getDisplay("select * from Product as a join Category as b on a.cateID = b.cateID");
+    }
+
+    @Override
+    public Vector<Product> getAll(PreparedStatement statement) {
+        Vector<Product> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while (rs.next()) {
+                String pid = rs.getString("pid");
+                String Pname = rs.getString("pname");
+                int quantity = rs.getInt("quantity");
+                double price = rs.getDouble("price");
+                String image = rs.getString("image");
+                String description = rs.getString("description");
+                int status = rs.getInt("status");
+                int cateId = rs.getInt("cateId");
+                Product pro = new Product(pid, Pname, quantity, price, image, description, status, cateId);
+                vector.add(pro);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
     }
 }

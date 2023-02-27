@@ -11,6 +11,7 @@
     DAOCategory daoCat = new DAOCategory();
     Vector<Category> catList = daoCat.getAll();
     String query = (String) request.getAttribute("query");
+    
 %>
 <!DOCTYPE html>
 <html>

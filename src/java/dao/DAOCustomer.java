@@ -174,5 +174,26 @@ public class DAOCustomer extends DAOEntity<Customer>{
         return getAll("SELECT * from Customer");
     }
 
+    @Override
+    public Vector<Customer> getAll(PreparedStatement statement) {
+        Vector<Customer> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while(rs.next()){
+                String cid = rs.getString("cid");
+                String name = rs.getString("cname");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                String address = rs.getString("address");
+                int status = rs.getInt("status");
+                Customer cus = new Customer(cid, name, username, password, address, status);
+                vector.add(cus);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
+
     
 }

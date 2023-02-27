@@ -111,4 +111,22 @@ public class DAOCategory extends DAOEntity<Category>{
     public Vector<Category> getAll() {
         return getAll("SELECT * from Category");
     }
+
+    @Override
+    public Vector<Category> getAll(PreparedStatement statement) {
+        Vector<Category> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while(rs.next()){
+                String name = rs.getString("cateName");
+                int status = rs.getInt("status");
+                int cateid = rs.getInt("cateId");
+                Category cat = new Category(cateid, name, status);
+                vector.add(cat);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
 }

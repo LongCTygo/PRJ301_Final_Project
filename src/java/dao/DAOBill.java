@@ -99,18 +99,10 @@ public class DAOBill extends DAOEntity<Bill> {
 
     @Override
     public Vector<Bill> getAll(String sql) {
-        Vector<Bill> vector = new Vector<Bill>();
+        Vector<Bill> vector = new Vector<>();
         ResultSet rs = this.getData(sql);
         try {
             while (rs.next()) {
-//            pre.setString(1, bill.getDateCreate());
-//            pre.setString(2, bill.getRecAddress());
-//            pre.setString(3, bill.getRecPhone());
-//            pre.setString(4, bill.getNote());
-//            pre.setDouble(5, bill.getTotalMoney());
-//            pre.setInt(6, bill.getStatus());
-//            pre.setString(7, bill.getCid());
-//            pre.setString(8, bill.getBid());
                 String dateCreate = rs.getString("dateCreate");
                 String recAddress = rs.getString("recAddress");
                 String recPhone = rs.getString("recPhone");
@@ -151,4 +143,26 @@ public class DAOBill extends DAOEntity<Bill> {
         return getAll("SELECT * from Bill");
     }
 
+    @Override
+    public Vector<Bill> getAll(PreparedStatement statement) {
+        Vector<Bill> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while (rs.next()) {
+                String dateCreate = rs.getString("dateCreate");
+                String recAddress = rs.getString("recAddress");
+                String recPhone = rs.getString("recPhone");
+                String note = rs.getString("note");
+                double totalMoney = rs.getDouble("totalMoney");
+                int status = rs.getInt("status");
+                String cid = rs.getString("cid");
+                String bid = rs.getString("bid");
+                Bill bill = new Bill(bid, dateCreate, recAddress, recPhone, note, totalMoney, status, cid);
+                vector.add(bill);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOBill.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
 }

@@ -143,7 +143,7 @@ public class ClientController extends HttpServlet {
             DAOProduct daoPro = new DAOProduct();
             Vector<ProductDisplay> vector = daoPro.getDisplay(String.format("select * from Product as a join Category as b on a.cateID = b.cateID WHERE pid = '%s'", pid));
             if (!vector.isEmpty()) {
-                //Product
+                //Product 
                 ProductDisplay pd = vector.get(0);
                 request.setAttribute("product", pd);
                 //Review

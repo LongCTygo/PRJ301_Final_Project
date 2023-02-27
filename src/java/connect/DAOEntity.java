@@ -4,6 +4,7 @@
  */
 package connect;
 
+import java.sql.PreparedStatement;
 import java.util.Vector;
 
 /**
@@ -38,6 +39,8 @@ public abstract class DAOEntity<E> extends DBConnect{
      */
     public abstract Vector<E> getAll(String sql);
     
+    public abstract Vector<E> getAll(PreparedStatement statement);
+    
     /**
      * Remove an entity with 1 primary key.
      * @param s
@@ -56,11 +59,4 @@ public abstract class DAOEntity<E> extends DBConnect{
         throw new UnsupportedOperationException("Does not implement.");
     }
     
-    public int getAmount(){
-        return getAll().size();
-    }
-    
-    public int getAmount(String sql){
-        return getAll(sql).size();
-    }
 }

@@ -80,4 +80,21 @@ public class DAOAdmin extends DAOEntity<Admin>{
     public Vector<Admin> getAll() {
         return getAll("SELECT * from Admin");
     }
+
+    @Override
+    public Vector<Admin> getAll(PreparedStatement statement){
+        Vector<Admin> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while(rs.next()){
+                String admin = rs.getString("admin");
+                String password = rs.getString("password");
+                Admin Admin = new Admin(admin, password);
+                vector.add(Admin);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
 }

@@ -94,6 +94,7 @@ public class DAOReview extends DAOEntity<Review> {
         return getDisplay("SELECT * from Review a, Customer b WHERE a.cid = b.cid");
     }
     
+    @Deprecated
     public Vector<ReviewDisplay> getDisplay(String sql){
         Vector<ReviewDisplay> vector = new Vector<>();
         ResultSet rs = this.getData(sql);
@@ -106,6 +107,46 @@ public class DAOReview extends DAOEntity<Review> {
                 int score = rs.getInt(4);
                 String review = rs.getString(5);
                 ReviewDisplay r = new ReviewDisplay(cname, cid, pid, review, score, date);
+                vector.add(r);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
+    
+    public Vector<ReviewDisplay> getDisplay(PreparedStatement statement){
+        Vector<ReviewDisplay> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while(rs.next()){
+                String cname = rs.getString(7);
+                String cid = rs.getString(1);
+                String pid = rs.getString(2);
+                String date = rs.getString(3);
+                int score = rs.getInt(4);
+                String review = rs.getString(5);
+                ReviewDisplay r = new ReviewDisplay(cname, cid, pid, review, score, date);
+                vector.add(r);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
+
+    @Override
+    public Vector<Review> getAll(PreparedStatement statement) {
+        Vector<Review> vector = new Vector<>();
+        ResultSet rs = this.getData(statement);
+        try {
+            while(rs.next()){
+                String cid = rs.getString(1);
+                String pid = rs.getString(2);
+                String date = rs.getString(3);
+                int score = rs.getInt(4);
+                String comment = rs.getString(5);
+                Review r = new Review(cid, pid, date, score, date);
                 vector.add(r);
             }
         } catch (SQLException ex) {
