@@ -17,8 +17,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,6 +63,12 @@ public class ClientController extends HttpServlet {
                 if (go.equals("home")) {
                     home(request, response);
                 }
+                if (go.equals("cart")) {
+                    cart(request, response);
+                }
+                if (go.equals("addCart")) {
+                    addCart(request, response);
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -98,7 +106,7 @@ public class ClientController extends HttpServlet {
         //Sorting
         sql += DAOProduct.DEFAULT_ORDER_BY;
         //Construct statement
-        PreparedStatement statement = daoPro.conn.prepareStatement(sql);
+        PreparedStatement statement = daoPro.getPrep(sql);
         statement.setString(1, "%" + query + "%");
         if (params >= 2) {
             statement.setInt(2, id);
@@ -107,8 +115,7 @@ public class ClientController extends HttpServlet {
         request.setAttribute("productList", productList);
         dispatch(request, response, "client/shop.jsp");
     }
-    
-    
+
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         String pid = request.getParameter("pid");
         if (pid != null) {
@@ -141,7 +148,7 @@ public class ClientController extends HttpServlet {
 
     private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         dispatch(request, response, "client/index.jsp");
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -183,5 +190,46 @@ public class ClientController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
+    private void cart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        //Get session
+        HttpSession session = request.getSession();
+        //get cart data
+        Vector<Product> vector = new Vector<>();
+        DAOProduct dao = new DAOProduct();
+        Enumeration<String> ems = session.getAttributeNames();
+        while (ems.hasMoreElements()) {
+            String pid = ems.nextElement();
+            String sql = "SELECT * from Product WHERE pid = ?";
+            //Statement
+            PreparedStatement statement = dao.getPrep(sql);
+            statement.setString(1, pid);
+            Vector<Product> all = dao.getAll(statement);
+            if (all.isEmpty()) {
+                continue;
+            }
+            Product pro = all.get(0);
+            //set quantity
+            pro.setQuantity((int) session.getAttribute(pid));
+            vector.add(pro);
+        }
+        request.setAttribute("cartList", vector);
+        dispatch(request, response, "client/cart.jsp");
+    }
+
+    private void addCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        String pid = request.getParameter("pid");
+        String a = request.getParameter("amount");
+        int amount = a == null ? 1 : Integer.parseInt(a);
+        //Obtain session
+        HttpSession session = request.getSession();
+        Object value = session.getAttribute(pid);
+        if (value == null) {
+            session.setAttribute(pid, amount);
+        } else {
+            session.setAttribute(pid, (Integer)(value) + amount);
+            System.out.println(session.getAttribute(pid));
+        }
+        cart(request, response);
+    }
+
 }

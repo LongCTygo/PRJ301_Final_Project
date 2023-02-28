@@ -58,5 +58,9 @@ public class DBConnect {
         }
         return rs;
     }
+    
+    public PreparedStatement getPrep(String sql) throws SQLException{
+        return conn.prepareStatement(sql);
+    }
    
 }

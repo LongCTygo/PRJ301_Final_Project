@@ -1,5 +1,5 @@
-
 package dao;
+
 import connect.DAOEntity;
 import entity.Category;
 import java.sql.PreparedStatement;
@@ -9,15 +9,16 @@ import java.sql.Statement;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-public class DAOCategory extends DAOEntity<Category>{
+
+public class DAOCategory extends DAOEntity<Category> {
 
     @Override
-    public int add(Category category){
+    public int add(Category category) {
         int n = 0;
-        String sql = "INSERT INTO [dbo].[Category]\n" +
-"           ([cateName]\n" +
-"           ,[status])\n" +
-"     VALUES (?,?)";
+        String sql = "INSERT INTO [dbo].[Category]\n"
+                + "           ([cateName]\n"
+                + "           ,[status])\n"
+                + "     VALUES (?,?)";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, category.getCateName());
@@ -28,13 +29,14 @@ public class DAOCategory extends DAOEntity<Category>{
         }
         return n;
     }
+
     @Override
-    public int update(Category category){
+    public int update(Category category) {
         int n = 0;
-        String sql ="UPDATE [dbo].[Category]\n" +
-"   SET [cateName] = ?\n" +
-"      ,[status] = ?\n" +
-" WHERE [cateId] = ?";
+        String sql = "UPDATE [dbo].[Category]\n"
+                + "   SET [cateName] = ?\n"
+                + "      ,[status] = ?\n"
+                + " WHERE [cateId] = ?";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, category.getCateName());
@@ -46,7 +48,8 @@ public class DAOCategory extends DAOEntity<Category>{
         }
         return n;
     }
-    public void displayAll(){
+
+    public void displayAll() {
         String sql = "select * from Category";
         try {
             //default: con tro chi di xuong
@@ -54,7 +57,7 @@ public class DAOCategory extends DAOEntity<Category>{
             Statement state = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             ResultSet rs = state.executeQuery(sql);
-            while(rs.next()){
+            while (rs.next()) {
                 /* dataType varName = rs.getDataType("fieldName|index"); */
                 String name = rs.getString("cateName");
                 int status = rs.getInt("status");
@@ -68,12 +71,13 @@ public class DAOCategory extends DAOEntity<Category>{
             Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     @Override
-    public Vector<Category> getAll(String sql){
-        Vector<Category> vector = new Vector<Category>();
+    public Vector<Category> getAll(String sql) {
+        Vector<Category> vector = new Vector<>();
         ResultSet rs = this.getData(sql);
         try {
-            while(rs.next()){
+            while (rs.next()) {
                 String name = rs.getString("cateName");
                 int status = rs.getInt("status");
                 int cateid = rs.getInt("cateId");
@@ -85,18 +89,18 @@ public class DAOCategory extends DAOEntity<Category>{
         }
         return vector;
     }
+
     @Override
-    public int remove(String id){
+    public int remove(String id) {
         int n = 0;
-        String sql = "delete from Category where cateId ='" + id +"'";
+        String sql = "delete from Category where cateId ='" + id + "'";
         try {
             //note: Customer --1 ----n--> Bill -> Khong xoa duoc
             //neu cid ton tai tren Bill
-            ResultSet rs = this.getData("Select * from Product where cateID='" +id+"'");
-            if(rs.next()){
-                n=-1;
-            }
-            else {
+            ResultSet rs = this.getData("Select * from Product where cateID='" + id + "'");
+            if (rs.next()) {
+                n = -1;
+            } else {
                 Statement state = conn.createStatement();
                 n = state.executeUpdate(sql);
             }
@@ -105,7 +109,6 @@ public class DAOCategory extends DAOEntity<Category>{
         }
         return n;
     }
-
 
     @Override
     public Vector<Category> getAll() {
@@ -117,7 +120,7 @@ public class DAOCategory extends DAOEntity<Category>{
         Vector<Category> vector = new Vector<>();
         ResultSet rs = this.getData(statement);
         try {
-            while(rs.next()){
+            while (rs.next()) {
                 String name = rs.getString("cateName");
                 int status = rs.getInt("status");
                 int cateid = rs.getInt("cateId");
