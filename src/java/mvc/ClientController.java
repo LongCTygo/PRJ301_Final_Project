@@ -46,32 +46,32 @@ public class ClientController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            String go = request.getParameter("go");
-            if (go == null) {
-                go = DEFAULT_GO;
+        String go = request.getParameter("go");
+        
+        //Get cart
+        HttpSession session = request.getSession();
+        
+        if (go == null) {
+            go = DEFAULT_GO;
+        }
+        request.setAttribute("go", go);
+        //List Shop
+        try {
+            if (go.equals("listShop")) {
+                listShop(request, response, session);
+            } else if (go.equals("detail")) {
+                detail(request, response, session);
+            } else if (go.equals("home")) {
+                home(request, response, session);
+            } else if (go.equals("cart")) {
+                cart(request, response, session);
+            } else if (go.equals("addCart")) {
+                addCart(request, response, session);
+            } else if (go.equals("updateCart")) {
+                updateCart(request, response, session);
             }
-            request.setAttribute("go", go);
-            //List Shop
-            try {
-                if (go.equals("listShop")) {
-                    listShop(request, response);
-                }
-                if (go.equals("detail")) {
-                    detail(request, response);
-                }
-                if (go.equals("home")) {
-                    home(request, response);
-                }
-                if (go.equals("cart")) {
-                    cart(request, response);
-                }
-                if (go.equals("addCart")) {
-                    addCart(request, response);
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -83,7 +83,7 @@ public class ClientController extends HttpServlet {
         dispatch.forward(request, response);
     }
 
-    private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+    private void listShop(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
         DAOProduct daoPro = new DAOProduct();
         int params = 1;
         //Initial SQL
@@ -116,7 +116,7 @@ public class ClientController extends HttpServlet {
         dispatch(request, response, "client/shop.jsp");
     }
 
-    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+    private void detail(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
         String pid = request.getParameter("pid");
         if (pid != null) {
             DAOProduct daoPro = new DAOProduct();
@@ -143,10 +143,12 @@ public class ClientController extends HttpServlet {
                 dispatch(request, response, "client/detail.jsp");
 
             }
+        } else {
+            listShop(request, response, session);
         }
     }
 
-    private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void home(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         dispatch(request, response, "client/index.jsp");
 
     }
@@ -190,9 +192,7 @@ public class ClientController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void cart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        //Get session
-        HttpSession session = request.getSession();
+    private void cart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
         //get cart data
         Vector<Product> vector = new Vector<>();
         DAOProduct dao = new DAOProduct();
@@ -216,20 +216,43 @@ public class ClientController extends HttpServlet {
         dispatch(request, response, "client/cart.jsp");
     }
 
-    private void addCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+    private void addCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
         String pid = request.getParameter("pid");
         String a = request.getParameter("amount");
         int amount = a == null ? 1 : Integer.parseInt(a);
-        //Obtain session
-        HttpSession session = request.getSession();
         Object value = session.getAttribute(pid);
         if (value == null) {
             session.setAttribute(pid, amount);
         } else {
-            session.setAttribute(pid, (Integer)(value) + amount);
-            System.out.println(session.getAttribute(pid));
+            session.setAttribute(pid, (Integer) (value) + amount);
         }
-        cart(request, response);
+        System.out.printf("Added %d items of ID '%s' to cart! \n", amount, pid);
+        response.sendRedirect("ClientController?go=cart");
+    }
+
+    private void updateCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+        //Check if the action is to remove an item
+        String remove = request.getParameter("remove");
+        //if remove
+        if (remove != null) {
+            session.removeAttribute(remove);
+        } else {
+            //Normal Update
+            Enumeration<String> ems = request.getParameterNames();
+            while (ems.hasMoreElements()) {
+                try {
+                    String key = ems.nextElement();
+                    int newValue = Integer.parseInt(request.getParameter(key));
+                    if (newValue == 0) {
+                        session.removeAttribute(key);
+                    } else {
+                        session.setAttribute(key, newValue);
+                    }
+                } catch (NumberFormatException ex) {
+                }
+            }
+        }
+        response.sendRedirect("ClientController?go=cart");
     }
 
 }

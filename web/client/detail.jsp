@@ -114,7 +114,7 @@
                                         <i class="fa fa-minus"></i>
                                     </button>
                                 </div>
-                                <input type="text" name="quantity" class="form-control bg-secondary text-center" value=1 max=<%=p.getQuantity()%>>
+                                <input type="text" name="amount" class="form-control bg-secondary text-center" value=1 max=<%=p.getQuantity()%>>
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary btn-plus">
                                         <i class="fa fa-plus"></i>
