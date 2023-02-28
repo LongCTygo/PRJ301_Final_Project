@@ -4,14 +4,17 @@
     Author     : ADMIN
 --%>
 
+<%@page import="java.util.Hashtable"%>
+<%@page import="utils.SessionUtil"%>
 <%@page import="java.util.Enumeration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    Enumeration<String> ems = session.getAttributeNames();
+    Hashtable<String, Integer> cart = SessionUtil.getCart(session);
+    Enumeration<String> ems = cart.keys();
     int inCart = 0;
     while (ems.hasMoreElements()) {
         String key = ems.nextElement();
-        inCart += (int) session.getAttribute(key);
+        inCart += (int) cart.get(key);
     }
 %>
 <!DOCTYPE html>

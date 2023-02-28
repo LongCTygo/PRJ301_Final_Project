@@ -220,4 +220,18 @@ public class DAOProduct extends DAOEntity<Product> {
         }
         return vector;
     }
+    
+    public Product get(String pid){
+        try {
+            PreparedStatement statement = this.getPrep("SELECT * from Product where pid = ?");
+            statement.setString(1, pid);
+            Vector<Product> all = this.getAll(statement);
+            if (!all.isEmpty()){
+                return all.get(0);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }

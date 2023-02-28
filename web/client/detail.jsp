@@ -180,25 +180,15 @@
                                     <div class="d-flex my-3">
                                         <p class="mb-0 mr-2">Your Rating * :</p>
                                         <div class="text-primary">
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
+                                            <input type="range" class="form-range" min="0" max="10" id="rating" oninput="this.nextElementSibling.value = this.value">
+                                            <output>5</output>
                                             <i class="far fa-star"></i>
                                         </div>
                                     </div>
                                     <form>
                                         <div class="form-group">
                                             <label for="message">Your Review *</label>
-                                            <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="name">Your Name *</label>
-                                            <input type="text" class="form-control" id="name">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="email">Your Email *</label>
-                                            <input type="email" class="form-control" id="email">
+                                            <textarea id="message" cols="30" rows="5" class="form-control" required></textarea>
                                         </div>
                                         <div class="form-group mb-0">
                                             <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
@@ -239,7 +229,7 @@
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <a href="ClientController?go=detail&pid=<%=sug.getPid()%>" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <a href="" class="btn btn-sm text-dark p-0 <%if (sug.getQuantity() == 0) {%>disabled<%}%>"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                <a href="ClientController?go=addCart&pid=<%=sug.getPid()%>" class="btn btn-sm text-dark p-0 <%if (sug.getQuantity() == 0) {%>disabled<%}%>"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                             </div>
                         </div>
                         <%}%>

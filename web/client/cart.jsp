@@ -12,6 +12,7 @@
     Vector<Product> vector = (Vector<Product>) request.getAttribute("cartList");
     double subtotal = 0;
     Vector<String> successes = (Vector<String>) request.getAttribute("success");
+    Vector<String> errors = (Vector<String>) request.getAttribute("error");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -78,6 +79,19 @@
                                 for (String msg : successes) {
                         %>
                         <div class="alert alert-success alert-dismissible fade show"" role="alert">
+                            <strong><%=msg%></strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <%}
+                            }%>
+                        <!-- Error -->
+                        <%
+                            if (errors != null) {
+                                for (String msg : errors) {
+                        %>
+                        <div class="alert alert-danger alert-dismissible fade show"" role="alert">
                             <strong><%=msg%></strong>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -155,7 +169,10 @@
                                 <h5 class="font-weight-bold">Total</h5>
                                 <h5 class="font-weight-bold">$<%=price%></h5>
                             </div>
-                            <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                            <form action="ClientController">
+                                <input type="hidden" name="go" value="checkout">
+                                <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                            </form>
                         </div>
                     </div>
                 </div>

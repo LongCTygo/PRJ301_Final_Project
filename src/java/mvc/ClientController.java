@@ -21,9 +21,11 @@ import jakarta.servlet.http.HttpSession;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.SessionUtil;
 
 /**
  *
@@ -56,19 +58,20 @@ public class ClientController extends HttpServlet {
         //List Shop
         try {
             if (go.equals("listShop")) {
-                listShop(request, response, session);
+                listShop(request, response);
             } else if (go.equals("detail")) {
                 detail(request, response, session);
             } else if (go.equals("home")) {
-                home(request, response, session);
+                home(request, response);
             } else if (go.equals("cart")) {
                 cart(request, response, session);
             } else if (go.equals("addCart")) {
                 addCart(request, response, session);
             } else if (go.equals("updateCart")) {
                 updateCart(request, response, session);
-            }
-            else {
+            } else if (go.equals("checkout")) {
+                checkout(request, response, session);
+            } else {
                 request.setAttribute("context", "404");
                 dispatch(request, response, "ErrorPage");
             }
@@ -88,7 +91,7 @@ public class ClientController extends HttpServlet {
         dispatch.forward(request, response);
     }
 
-    private void listShop(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+    private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         DAOProduct daoPro = new DAOProduct();
         int params = 1;
         //Initial SQL
@@ -149,11 +152,11 @@ public class ClientController extends HttpServlet {
 
             }
         } else {
-            listShop(request, response, session);
+            listShop(request, response);
         }
     }
 
-    private void home(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+    private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         dispatch(request, response, "client/index.jsp");
 
     }
@@ -199,22 +202,18 @@ public class ClientController extends HttpServlet {
 
     private void cart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
         //get cart data
+        Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         Vector<Product> vector = new Vector<>();
         DAOProduct dao = new DAOProduct();
-        Enumeration<String> ems = session.getAttributeNames();
+        Enumeration<String> ems = cart.keys();
         while (ems.hasMoreElements()) {
             String pid = ems.nextElement();
-            String sql = "SELECT * from Product WHERE pid = ?";
-            //Statement
-            PreparedStatement statement = dao.getPrep(sql);
-            statement.setString(1, pid);
-            Vector<Product> all = dao.getAll(statement);
-            if (all.isEmpty()) {
+            Product pro = dao.get(pid);
+            if (pro == null) {
                 continue;
             }
-            Product pro = all.get(0);
             //set quantity
-            pro.setQuantity((int) session.getAttribute(pid));
+            pro.setQuantity((int) cart.get(pid));
             vector.add(pro);
         }
         request.setAttribute("cartList", vector);
@@ -222,25 +221,31 @@ public class ClientController extends HttpServlet {
     }
 
     private void addCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+        Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         String pid = request.getParameter("pid");
         String a = request.getParameter("amount");
         int amount = a == null ? 1 : Integer.parseInt(a);
-        Object value = session.getAttribute(pid);
-        if (value == null) {
-            session.setAttribute(pid, amount);
-        } else {
-            session.setAttribute(pid, (Integer) (value) + amount);
+        if (amount <= 0) {
+            amount = 1;
         }
+        Object value = cart.get(pid);
+        if (value == null) {
+            cart.put(pid, amount);
+        } else {
+            cart.put(pid, (Integer) (value) + amount);
+        }
+        SessionUtil.setCart(session, cart);
         addSuccessMessage(request, "Added to Cart!");
         dispatch(request, response, "ClientController?go=cart");
     }
 
     private void updateCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+        Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         //Check if the action is to remove an item
         String remove = request.getParameter("remove");
         //if remove
         if (remove != null) {
-            session.removeAttribute(remove);
+            cart.remove(remove);
             addSuccessMessage(request, "Removed from Cart!");
         } else {
             //Normal Update
@@ -249,34 +254,74 @@ public class ClientController extends HttpServlet {
                 try {
                     String key = ems.nextElement();
                     int newValue = Integer.parseInt(request.getParameter(key));
-                    if (newValue == 0) {
-                        session.removeAttribute(key);
+                    if (newValue <= 0) {
+                        cart.remove(key);
                     } else {
-                        session.setAttribute(key, newValue);
+                        cart.put(key, newValue);
                     }
                 } catch (NumberFormatException ex) {
                 }
             }
             addSuccessMessage(request, "Cart Updated!");
         }
+        SessionUtil.setCart(session, cart);
         dispatch(request, response, "ClientController?go=cart");
     }
 
     private void addSuccessMessage(HttpServletRequest request, String msg) {
         Vector<String> success = (Vector<String>) request.getAttribute("success");
-        if (success == null){
+        if (success == null) {
             success = new Vector<>();
         }
         success.add(msg);
         request.setAttribute("success", success);
     }
-    
+
     private void addErrorMessage(HttpServletRequest request, String msg) {
         Vector<String> success = (Vector<String>) request.getAttribute("error");
-        if (success == null){
+        if (success == null) {
             success = new Vector<>();
         }
         success.add(msg);
         request.setAttribute("error", success);
     }
+
+    private void checkout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        Hashtable<String, Integer> cart = SessionUtil.getCart(session);
+        boolean canProceedtoCheckout = true;
+        Enumeration<String> ems = cart.keys();
+        if (cart.isEmpty()) {
+            //Cart is empty
+            addErrorMessage(request, "Cart is Empty!");
+            dispatch(request, response, "ClientController?go=cart");
+            return;
+        }
+        DAOProduct dao = new DAOProduct();
+        while (ems.hasMoreElements()) {
+            String pid = ems.nextElement();
+            int amount = cart.get(pid);
+            if (amount <= 0) {
+                addErrorMessage(request, String.format("Product %s amount was %d?", pid, amount));
+                canProceedtoCheckout = false;
+                continue;
+            }
+            //Get Product from Database
+            Product pro = dao.get(pid);
+            if (pro == null) {
+                addErrorMessage(request, String.format("Product %s was in cart, but was not in database somehow?", pid));
+                canProceedtoCheckout = false;
+                continue;
+            }
+            int stock = pro.getQuantity();
+            if (stock < amount) {
+                addErrorMessage(request, String.format("Cannot buy %dx %s. %d are available.", amount, pro.getPname(), stock));
+                canProceedtoCheckout = false;
+            }
+        }
+        if (canProceedtoCheckout) {
+            addSuccessMessage(request, "TODO: logic for checkout here. Add bills and stuffs idk");
+        }
+        dispatch(request, response, "ClientController?go=cart");
+    }
+
 }
