@@ -1,19 +1,51 @@
 package entity;
 public class Customer {
+
+    public int getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(int isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+    
+    public boolean isAdmin(){
+        return this.isAdmin == 1;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
     private String cid; 
     private String cname; 
     private String username;
     private String password;
     private String address;
     private int status;
+    private String phone;
+    private int isAdmin = 0;
 
-    public Customer(String cid, String cname, String username, String password, String address, int status) {
+    public Customer(String cid, String cname, String username, String password, String address, int status, String phone) {
         this.cid = cid;
         this.cname = cname;
         this.username = username;
         this.password = password;
         this.address = address;
         this.status = status;
+    }
+    
+    public Customer(String cid, String cname, String username, String password, String address, int status, String phone, int isAdmin) {
+        this.cid = cid;
+        this.cname = cname;
+        this.username = username;
+        this.password = password;
+        this.address = address;
+        this.status = status;
+        this.isAdmin = isAdmin;
     }
 
     public String getCid() {

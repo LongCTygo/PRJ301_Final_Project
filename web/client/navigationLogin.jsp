@@ -36,7 +36,7 @@
             <div class="navbar-nav ml-auto py-0">
                 <% if (session == null || session.getAttribute("cid") == null) {%>
                 <a href="ClientController?go=login" class="nav-item nav-link">Login</a>
-                <a href="" class="nav-item nav-link">Register</a>
+                <a href="ClientController?go=register" class="nav-item nav-link">Register</a>
                 <% } else { 
                     DAOCustomer dao = new DAOCustomer();
                     String cid = (String) session.getAttribute("cid");

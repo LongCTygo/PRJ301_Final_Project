@@ -4,6 +4,7 @@
     Author     : ADMIN
 --%>
 
+<%@page import="entity.Review"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="display.ProductDisplay,display.ReviewDisplay,java.util.Vector,java.io.IOException,dao.DAOProduct"%>
 
@@ -11,13 +12,27 @@
     ProductDisplay p = (ProductDisplay) request.getAttribute("product");
     Vector<ReviewDisplay> vector = (Vector<ReviewDisplay>) request.getAttribute("reviews");
     Vector<ProductDisplay> suggestions = (Vector<ProductDisplay>) request.getAttribute("suggestions");
+    Review userReview = null;
+    String cid = (String) session.getAttribute("cid");
     //Avg Score
     double avg = 0;
     for (ReviewDisplay rd : vector) {
         avg += rd.getScore();
+        if (rd.getCid().equals(cid)) {
+            userReview = rd;
+        }
     }
     if (avg != 0) {
         avg /= vector.size();
+    }
+    int score;
+    String review;
+    if (userReview == null) {
+        score = 5;
+        review = "";
+    } else {
+        score = userReview.getScore();
+        review = userReview.getReview();
     }
 %>
 
@@ -107,7 +122,7 @@
                     <div class="d-flex align-items-center mb-4 pt-2">
                         <form action="ClientController">
                             <input type="hidden" name="go" value="addCart">
-                            <input type="hidden" name="pid" value="<%= p.getPid() %>">
+                            <input type="hidden" name="pid" value="<%= p.getPid()%>">
                             <div class="input-group quantity mr-3" style="width: 130px;">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary btn-minus" >
@@ -121,7 +136,7 @@
                                     </button>
                                 </div>
                             </div>
-                                <button type="submit" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                            <button type="submit" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
                         </form>
                     </div>
                     <div class="d-flex pt-2">
@@ -177,22 +192,35 @@
                                 <div class="col-md-6">
                                     <h4 class="mb-4">Leave a review</h4>
                                     <small>Your email address will not be published. Required fields are marked *</small>
-                                    <div class="d-flex my-3">
-                                        <p class="mb-0 mr-2">Your Rating * :</p>
-                                        <div class="text-primary">
-                                            <input type="range" class="form-range" min="0" max="10" id="rating" oninput="this.nextElementSibling.value = this.value">
-                                            <output>5</output>
-                                            <i class="far fa-star"></i>
-                                        </div>
+                                    <% if (userReview != null){ %>
+                                    <div class="alert alert-success"" role="alert">
+                                        You have already reviewed this product. You can update the review.
                                     </div>
-                                    <form>
+                                    <%}%>
+                                    <form action="ClientController" method="post" id="reviewForm">
+                                        <% if (userReview!=null){ %>
+                                        <div class="form-group mb-0">
+                                            <input name="remove" type="submit" value="Delete This Review" class="btn btn-primary px-3">
+                                        </div>
+                                        <%}%>
+                                        <div class="d-flex my-3">
+                                            <p class="mb-0 mr-2">Your Rating * :</p>
+                                            <div class="text-primary">
+                                                <input value="<%= score %>" name="score" type="range" class="form-range" min="0" max="10" id="rating" oninput="this.nextElementSibling.value = this.value">
+                                                <output><%= score %></output>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                        </div> 
+                                        <input type="hidden" name="go" value="review">
+                                        <input type="hidden" name="pid" value="<%= p.getPid()%>">
                                         <div class="form-group">
                                             <label for="message">Your Review *</label>
-                                            <textarea id="message" cols="30" rows="5" class="form-control" required></textarea>
+                                            <textarea  name="review" id="reviewForm" cols="30" rows="5" class="form-control" required><%= review %></textarea>
                                         </div>
                                         <div class="form-group mb-0">
                                             <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
                                         </div>
+                                        
                                     </form>
                                 </div>
                             </div>

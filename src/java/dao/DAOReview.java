@@ -10,6 +10,7 @@ import entity.Review;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,10 +26,11 @@ public class DAOReview extends DAOEntity<Review> {
         int n = 0;
         String sql = "INSERT INTO [dbo].[Review]\n"
                 + "           ([cid]\n"
-                + "           ,[pid])\n"
-                + "           ,[score])\n"
+                + "           ,[pid]\n"
+                + "           ,[score]\n"
                 + "           ,[comment])\n"
-                + "     VALUES(?,?,?,?)";
+                + "     VALUES\n"
+                + "           (?,?,?,?)";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, entity.getCid());
@@ -38,6 +40,7 @@ public class DAOReview extends DAOEntity<Review> {
             n = pre.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DAOAdmin.class.getName()).log(Level.SEVERE, null, ex);
+            return ex.getErrorCode();
         }
         return n;
     }
@@ -48,7 +51,7 @@ public class DAOReview extends DAOEntity<Review> {
         String sql = "UPDATE [dbo].[Review]\n"
                 + "   SET [score] = ?\n"
                 + "      ,[comment] = ?\n"
-                + "      ,[date] = ?\n"
+                + "      ,[writtenDate] = ?\n"
                 + " WHERE [cid] = ?"
                 + " AND [pid] = ?";
         try {
@@ -64,7 +67,7 @@ public class DAOReview extends DAOEntity<Review> {
         }
         return n;
     }
-    
+
     @Override
     public Vector<Review> getAll() {
         return getAll("SELECT * from Review");
@@ -75,7 +78,7 @@ public class DAOReview extends DAOEntity<Review> {
         Vector<Review> vector = new Vector<>();
         ResultSet rs = this.getData(sql);
         try {
-            while(rs.next()){
+            while (rs.next()) {
                 String cid = rs.getString(1);
                 String pid = rs.getString(2);
                 String date = rs.getString(3);
@@ -89,17 +92,17 @@ public class DAOReview extends DAOEntity<Review> {
         }
         return vector;
     }
-    
-    public Vector<ReviewDisplay> getDisplay(){
+
+    public Vector<ReviewDisplay> getDisplay() {
         return getDisplay("SELECT * from Review a, Customer b WHERE a.cid = b.cid");
     }
-    
+
     @Deprecated
-    public Vector<ReviewDisplay> getDisplay(String sql){
+    public Vector<ReviewDisplay> getDisplay(String sql) {
         Vector<ReviewDisplay> vector = new Vector<>();
         ResultSet rs = this.getData(sql);
         try {
-            while(rs.next()){
+            while (rs.next()) {
                 String cname = rs.getString(7);
                 String cid = rs.getString(1);
                 String pid = rs.getString(2);
@@ -114,12 +117,12 @@ public class DAOReview extends DAOEntity<Review> {
         }
         return vector;
     }
-    
-    public Vector<ReviewDisplay> getDisplay(PreparedStatement statement){
+
+    public Vector<ReviewDisplay> getDisplay(PreparedStatement statement) {
         Vector<ReviewDisplay> vector = new Vector<>();
         ResultSet rs = this.getData(statement);
         try {
-            while(rs.next()){
+            while (rs.next()) {
                 String cname = rs.getString(7);
                 String cid = rs.getString(1);
                 String pid = rs.getString(2);
@@ -140,7 +143,7 @@ public class DAOReview extends DAOEntity<Review> {
         Vector<Review> vector = new Vector<>();
         ResultSet rs = this.getData(statement);
         try {
-            while(rs.next()){
+            while (rs.next()) {
                 String cid = rs.getString(1);
                 String pid = rs.getString(2);
                 String date = rs.getString(3);
@@ -154,5 +157,23 @@ public class DAOReview extends DAOEntity<Review> {
         }
         return vector;
     }
+
+    @Override
+    public int remove(String pid, String cid) {
+        int n = 0;
+        String sql = "delete from Review where pid = ? and cid = ?";
+        try {
+            PreparedStatement pre = conn.prepareStatement(sql);
+            pre.setString(1, pid);
+            pre.setString(2, cid);
+            n = pre.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOBillDetail.class.getName()).log(Level.SEVERE, null, ex);
+            return ex.getErrorCode();
+        }
+        return n;
+    }
+    
+    
 
 }

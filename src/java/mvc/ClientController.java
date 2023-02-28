@@ -4,12 +4,18 @@
  */
 package mvc;
 
+import dao.DAOBill;
+import dao.DAOBillDetail;
 import dao.DAOCustomer;
 import dao.DAOProduct;
 import dao.DAOReview;
 import display.ProductDisplay;
 import display.ReviewDisplay;
+import entity.Bill;
+import entity.BillDetail;
+import entity.Customer;
 import entity.Product;
+import entity.Review;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,11 +27,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.SQLErrorCodeUtil;
 import utils.SessionUtil;
 
 /**
@@ -73,15 +82,18 @@ public class ClientController extends HttpServlet {
                 updateCart(request, response, session);
             } else if (go.equals("checkout")) {
                 checkout(request, response, session);
-            } else if (go.equals("login")){
-                login(request,response);
-            } else if (go.equals("logout")){
-                logout(request,response,session);
-            }
-            else {
+            } else if (go.equals("login")) {
+                login(request, response);
+            } else if (go.equals("logout")) {
+                logout(request, response, session);
+            } else if (go.equals("review")) {
+                review(request, response, session);
+            } else if (go.equals("register")) {
+                register(request, response);
+            } else {
                 request.setAttribute("context", "404");
                 dispatch(request, response, "ErrorPage");
-            } 
+            }
             System.out.println(session);
         } catch (Exception ex) {
             Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
@@ -209,8 +221,8 @@ public class ClientController extends HttpServlet {
     }// </editor-fold>
 
     private void cart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
-        if (session==null || session.getAttribute("cid")==null){
-            toLogin(request,response);
+        if (session == null || session.getAttribute("cid") == null) {
+            toLogin(request, response);
             return;
         }
         //get cart data
@@ -233,8 +245,8 @@ public class ClientController extends HttpServlet {
     }
 
     private void addCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
-        if (session==null || session.getAttribute("cid")==null){
-            toLogin(request,response);
+        if (session == null || session.getAttribute("cid") == null) {
+            toLogin(request, response);
             return;
         }
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
@@ -256,8 +268,8 @@ public class ClientController extends HttpServlet {
     }
 
     private void updateCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
-        if (session==null || session.getAttribute("cid")==null){
-            toLogin(request,response);
+        if (session == null || session.getAttribute("cid") == null) {
+            toLogin(request, response);
             return;
         }
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
@@ -307,8 +319,8 @@ public class ClientController extends HttpServlet {
     }
 
     private void checkout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        if (session==null || session.getAttribute("cid")==null){
-            toLogin(request,response);
+        if (session == null || session.getAttribute("cid") == null) {
+            toLogin(request, response);
             return;
         }
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
@@ -343,7 +355,8 @@ public class ClientController extends HttpServlet {
             }
         }
         if (canProceedtoCheckout) {
-            addSuccessMessage(request, "TODO: logic for checkout here. Add bills and stuffs idk");
+            placeOrder(request, response, session);
+            addSuccessMessage(request, "Your order has been received.");
         } else {
             addErrorMessage(request, "Failed to proceed to checkout");
         }
@@ -352,14 +365,14 @@ public class ClientController extends HttpServlet {
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String submit = request.getParameter("submit");
-        if (submit == null){
+        if (submit == null) {
             dispatch(request, response, "client/login.jsp");
         } else {
             DAOCustomer dao = new DAOCustomer();
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             String cid = dao.login(username, password);
-            if (cid==null){
+            if (cid == null) {
                 addErrorMessage(request, "Username or password not correct.");
                 dispatch(request, response, "client/login.jsp");
             } else {
@@ -378,6 +391,103 @@ public class ClientController extends HttpServlet {
     private void logout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         session.invalidate();
         home(request, response);
+    }
+
+    private void placeOrder(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        Hashtable<String, Integer> cart = SessionUtil.getCart(session);
+        Enumeration<String> keys = cart.keys();
+        //DAOs
+        DAOProduct daoPro = new DAOProduct();
+        DAOBill daoBill = new DAOBill();
+        DAOBillDetail daoBd = new DAOBillDetail();
+        DAOCustomer daoCus = new DAOCustomer();
+        //Infos
+        String cid = (String) session.getAttribute("cid");
+        Customer cus = daoCus.get(cid);
+        //Create a new bill
+        SimpleDateFormat formatter = new SimpleDateFormat("_dd/MM/yyyy_HH:mm:ss");
+        String bid = cid + formatter.format(new Date());
+        String address = cus.getAddress();
+        String phone = cus.getPhone();
+        String note = ""; // TODO 
+        int status = 1;
+        Bill bill = new Bill(bid, address, phone, note, status, cid);
+        daoBill.add(bill);
+        //Go through all elements
+        while (keys.hasMoreElements()) {
+            String pid = keys.nextElement();
+            int amount = cart.get(pid);
+            //get this product
+            Product pro = daoPro.get(pid);
+            //Construct a bill detail
+            double buyPrice = pro.getPrice();
+            double subtotal = buyPrice * amount;
+            BillDetail bd = new BillDetail(bid, pid, amount, buyPrice, subtotal);
+            //Confirm buying
+            daoBd.add(bd);
+            //Reduce stock of items
+            int oldQuantity = pro.getQuantity();
+            pro.setQuantity(oldQuantity - amount);
+            daoPro.update(pro);
+        }
+        //Wipe cart
+        cart.clear();
+        session.setAttribute("cart", cart);
+    }
+
+    private void review(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        if (session == null || session.getAttribute("cid") == null) {
+            toLogin(request, response);
+            return;
+        }
+        DAOReview dao = new DAOReview();
+        String cid = (String) session.getAttribute("cid");
+        String pid = (String) request.getParameter("pid");
+        //Test if remove
+        String remove = (String) request.getParameter("remove");
+        if (remove != null) {
+            dao.remove(pid, cid);
+        } else {
+            String re = (String) request.getParameter("review");
+            int score = Integer.parseInt(request.getParameter("score"));
+            Review review = new Review(cid, pid, re, score);
+            int n = dao.add(review);
+            if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+                System.out.println("Unique Key Violation");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String now = sdf.format(new Date());
+                review.setDate(now);
+                int m = dao.update(review);
+                System.out.println("");
+            }
+        }
+        dispatch(request, response, "ClientController?go=detail&pid=" + pid);
+    }
+
+    private void register(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String submit = request.getParameter("submit");
+        if (submit == null) {
+            dispatch(request, response, "client/register.jsp");
+        } else {
+            DAOCustomer dao = new DAOCustomer();
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String name = request.getParameter("name");
+            String address = request.getParameter("address");
+            String phone = request.getParameter("phone");
+            Customer cus = new Customer(username, name, username, password, address, 1, phone);
+            int n = dao.add(cus);
+            if (n == 1) {
+                addSuccessMessage(request, "Registered Successfully");
+                dispatch(request, response, "client/login.jsp");
+            } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+                addErrorMessage(request, "An user with that username already exists.");
+                dispatch(request, response, "client/register.jsp");
+            } else {
+                addErrorMessage(request, "Registeration failed. Error Code = " + n + ".");
+                dispatch(request, response, "client/register.jsp");
+            }
+        }
     }
 
 }
