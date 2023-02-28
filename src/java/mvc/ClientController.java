@@ -4,6 +4,7 @@
  */
 package mvc;
 
+import dao.DAOCustomer;
 import dao.DAOProduct;
 import dao.DAOReview;
 import display.ProductDisplay;
@@ -51,6 +52,7 @@ public class ClientController extends HttpServlet {
         String go = request.getParameter("go");
         //Get cart
         HttpSession session = request.getSession();
+        System.out.println(session);
         if (go == null) {
             go = DEFAULT_GO;
         }
@@ -60,7 +62,7 @@ public class ClientController extends HttpServlet {
             if (go.equals("listShop")) {
                 listShop(request, response);
             } else if (go.equals("detail")) {
-                detail(request, response, session);
+                detail(request, response);
             } else if (go.equals("home")) {
                 home(request, response);
             } else if (go.equals("cart")) {
@@ -71,10 +73,16 @@ public class ClientController extends HttpServlet {
                 updateCart(request, response, session);
             } else if (go.equals("checkout")) {
                 checkout(request, response, session);
-            } else {
+            } else if (go.equals("login")){
+                login(request,response);
+            } else if (go.equals("logout")){
+                logout(request,response,session);
+            }
+            else {
                 request.setAttribute("context", "404");
                 dispatch(request, response, "ErrorPage");
-            }
+            } 
+            System.out.println(session);
         } catch (Exception ex) {
             Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("context", "exception");
@@ -124,7 +132,7 @@ public class ClientController extends HttpServlet {
         dispatch(request, response, "client/shop.jsp");
     }
 
-    private void detail(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         String pid = request.getParameter("pid");
         if (pid != null) {
             DAOProduct daoPro = new DAOProduct();
@@ -201,6 +209,10 @@ public class ClientController extends HttpServlet {
     }// </editor-fold>
 
     private void cart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+        if (session==null || session.getAttribute("cid")==null){
+            toLogin(request,response);
+            return;
+        }
         //get cart data
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         Vector<Product> vector = new Vector<>();
@@ -221,6 +233,10 @@ public class ClientController extends HttpServlet {
     }
 
     private void addCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+        if (session==null || session.getAttribute("cid")==null){
+            toLogin(request,response);
+            return;
+        }
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         String pid = request.getParameter("pid");
         String a = request.getParameter("amount");
@@ -240,6 +256,10 @@ public class ClientController extends HttpServlet {
     }
 
     private void updateCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
+        if (session==null || session.getAttribute("cid")==null){
+            toLogin(request,response);
+            return;
+        }
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         //Check if the action is to remove an item
         String remove = request.getParameter("remove");
@@ -287,6 +307,10 @@ public class ClientController extends HttpServlet {
     }
 
     private void checkout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        if (session==null || session.getAttribute("cid")==null){
+            toLogin(request,response);
+            return;
+        }
         Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         boolean canProceedtoCheckout = true;
         Enumeration<String> ems = cart.keys();
@@ -320,8 +344,40 @@ public class ClientController extends HttpServlet {
         }
         if (canProceedtoCheckout) {
             addSuccessMessage(request, "TODO: logic for checkout here. Add bills and stuffs idk");
+        } else {
+            addErrorMessage(request, "Failed to proceed to checkout");
         }
         dispatch(request, response, "ClientController?go=cart");
+    }
+
+    private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String submit = request.getParameter("submit");
+        if (submit == null){
+            dispatch(request, response, "client/login.jsp");
+        } else {
+            DAOCustomer dao = new DAOCustomer();
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String cid = dao.login(username, password);
+            if (cid==null){
+                addErrorMessage(request, "Username or password not correct.");
+                dispatch(request, response, "client/login.jsp");
+            } else {
+                HttpSession session = request.getSession();
+                session.setAttribute("cid", cid);
+                response.sendRedirect("ClientController");
+            }
+        }
+    }
+
+    private void toLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        addErrorMessage(request, "Please login first.");
+        dispatch(request, response, "client/login.jsp");
+    }
+
+    private void logout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        session.invalidate();
+        home(request, response);
     }
 
 }

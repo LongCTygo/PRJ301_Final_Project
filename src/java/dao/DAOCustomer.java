@@ -1,6 +1,7 @@
 package dao;
 import connect.DAOEntity;
 import entity.Customer;
+import entity.Product;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -132,7 +133,7 @@ public class DAOCustomer extends DAOEntity<Customer>{
         }
         return vector;
     }
-    public boolean login(String user, String pass){
+    public String login(String user, String pass){
         String sql = "select * from Customer where username=? and "
                + " password = ? and status=1";
         PreparedStatement pre;
@@ -141,12 +142,12 @@ public class DAOCustomer extends DAOEntity<Customer>{
             pre.setString(1, user); pre.setString(2, pass);
             ResultSet rs = pre.executeQuery();
             if(rs.next()){
-                return true;
+                return rs.getString(1);
             }
         } catch (SQLException ex) {
             Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        return null;
     }
     @Override
     public int remove(String id){
@@ -194,6 +195,19 @@ public class DAOCustomer extends DAOEntity<Customer>{
         }
         return vector;
     }
-
+    
+    public Customer get(String cid){
+        try {
+            PreparedStatement statement = this.getPrep("SELECT * from Customer where cid = ?");
+            statement.setString(1, cid);
+            Vector<Customer> all = this.getAll(statement);
+            if (!all.isEmpty()){
+                return all.get(0);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     
 }
