@@ -11,6 +11,7 @@
 <%
     Vector<Product> vector = (Vector<Product>) request.getAttribute("cartList");
     double subtotal = 0;
+    Vector<String> successes = (Vector<String>) request.getAttribute("success");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +58,7 @@
             <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
                 <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
                 <div class="d-inline-flex">
-                    <p class="m-0"><a href="">Home</a></p>
+                    <p class="m-0"><a href="ClientController">Home</a></p>
                     <p class="m-0 px-2">-</p>
                     <p class="m-0">Shopping Cart</p>
                 </div>
@@ -70,6 +71,21 @@
         <div class="container-fluid pt-5">
             <div class="row px-xl-5">
                 <div class="col-lg-8 table-responsive mb-5">
+                    <div>
+                        <!-- Success -->
+                        <%
+                            if (successes != null) {
+                                for (String msg : successes) {
+                        %>
+                        <div class="alert alert-success alert-dismissible fade show"" role="alert">
+                            <strong><%=msg%></strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <%}
+                            }%>
+                    </div>
                     <form action="ClientController" method="post">
                         <input type="hidden" name="go" value="updateCart">
                         <table class="table table-bordered text-center mb-0">
@@ -97,7 +113,7 @@
                                                     <i class="fa fa-minus"></i>
                                                 </button>
                                             </div>
-                                            <input type="text" name="<%= pro.getPid() %>" class="form-control form-control-sm bg-secondary text-center" value="<%= pro.getQuantity()%>">
+                                            <input type="text" name="<%= pro.getPid()%>" class="form-control form-control-sm bg-secondary text-center" value="<%= pro.getQuantity()%>">
                                             <div class="input-group-btn">
                                                 <button type="button" class="btn btn-sm btn-primary btn-plus">
                                                     <i class="fa fa-plus"></i>
@@ -106,7 +122,7 @@
                                         </div>
                                     </td>
                                     <td class="align-middle">$<%= String.format("%.2f", p)%></td>
-                                    <td class="align-middle"><button name="remove" value="<%= pro.getPid() %>" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
+                                    <td class="align-middle"><button name="remove" value="<%= pro.getPid()%>" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
                                 </tr>
                                 <%}%>
                             </tbody>

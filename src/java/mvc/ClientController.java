@@ -47,10 +47,8 @@ public class ClientController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String go = request.getParameter("go");
-        
         //Get cart
         HttpSession session = request.getSession();
-        
         if (go == null) {
             go = DEFAULT_GO;
         }
@@ -70,8 +68,15 @@ public class ClientController extends HttpServlet {
             } else if (go.equals("updateCart")) {
                 updateCart(request, response, session);
             }
-        } catch (SQLException ex) {
+            else {
+                request.setAttribute("context", "404");
+                dispatch(request, response, "ErrorPage");
+            }
+        } catch (Exception ex) {
             Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("context", "exception");
+            request.setAttribute("exception", ex);
+            dispatch(request, response, "ErrorPage");
         }
     }
 
@@ -226,8 +231,8 @@ public class ClientController extends HttpServlet {
         } else {
             session.setAttribute(pid, (Integer) (value) + amount);
         }
-        System.out.printf("Added %d items of ID '%s' to cart! \n", amount, pid);
-        response.sendRedirect("ClientController?go=cart");
+        addSuccessMessage(request, "Added to Cart!");
+        dispatch(request, response, "ClientController?go=cart");
     }
 
     private void updateCart(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, SQLException {
@@ -236,6 +241,7 @@ public class ClientController extends HttpServlet {
         //if remove
         if (remove != null) {
             session.removeAttribute(remove);
+            addSuccessMessage(request, "Removed from Cart!");
         } else {
             //Normal Update
             Enumeration<String> ems = request.getParameterNames();
@@ -251,8 +257,26 @@ public class ClientController extends HttpServlet {
                 } catch (NumberFormatException ex) {
                 }
             }
+            addSuccessMessage(request, "Cart Updated!");
         }
-        response.sendRedirect("ClientController?go=cart");
+        dispatch(request, response, "ClientController?go=cart");
     }
 
+    private void addSuccessMessage(HttpServletRequest request, String msg) {
+        Vector<String> success = (Vector<String>) request.getAttribute("success");
+        if (success == null){
+            success = new Vector<>();
+        }
+        success.add(msg);
+        request.setAttribute("success", success);
+    }
+    
+    private void addErrorMessage(HttpServletRequest request, String msg) {
+        Vector<String> success = (Vector<String>) request.getAttribute("error");
+        if (success == null){
+            success = new Vector<>();
+        }
+        success.add(msg);
+        request.setAttribute("error", success);
+    }
 }
