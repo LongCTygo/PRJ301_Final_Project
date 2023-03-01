@@ -118,7 +118,7 @@
                                         subtotal += p;
                                 %>
                                 <tr>
-                                    <td class="align-middle"><img src="img/<%= pro.getImage()%>" alt="" style="width: 50px;"> <%= pro.getPname()%></td>
+                                    <td class="align-middle"><img src="img/<%= pro.getImage()%>" alt="" style="width: 50px;"><a href="ClientController?go=detail&pid=<%= pro.getPid() %>"><%= pro.getPname()%></a></td>
                                     <td class="align-middle"><%= pro.getPriceFormat()%></td>
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">

@@ -77,12 +77,12 @@
                                         }%>
                                     <h3 class="mb-5">Sign in</h3>
                                     <div class="form-outline mb-4">
-                                        <input type="text" name="username" id="typeEmailX-2" class="form-control form-control-lg" />
+                                        <input type="text" name="username" id="typeEmailX-2" class="form-control form-control-lg" required/>
                                         <label class="form-label" for="typeEmailX-2">Username</label>
                                     </div>
 
                                     <div class="form-outline mb-4">
-                                        <input type="password" name="password" id="typePasswordX-2" class="form-control form-control-lg" />
+                                        <input type="password" name="password" id="typePasswordX-2" class="form-control form-control-lg" required/>
                                         <label class="form-label" for="typePasswordX-2">Password</label>
                                     </div>
                                     <h6 class="mb-5"><a href="ClientController?go=register">Register</a></h6>

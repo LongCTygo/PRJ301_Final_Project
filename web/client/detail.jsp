@@ -136,7 +136,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                            <button type="submit" class="btn btn-primary px-3" <%= (p.getQuantity()==0 ? "disabled" : "") %>><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
                         </form>
                     </div>
                     <div class="d-flex pt-2">

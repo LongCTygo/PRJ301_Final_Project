@@ -9,9 +9,11 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Admin Panel</title>
+        <link rel="stylesheet" href="css/style.css"/>
     </head>
     <body>
-        <h1>Hello Admin! You are <%= session.getAttribute("cid") %>.</h1>
+        <jsp:include page="adminnavbar.jsp"></jsp:include>
+        <h1>Hello Admin! You are <%= session.getAttribute("cid")%>.</h1>
     </body>
 </html>

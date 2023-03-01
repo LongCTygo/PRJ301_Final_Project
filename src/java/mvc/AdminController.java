@@ -14,6 +14,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.util.Vector;
+import utils.SessionUtil;
 
 /**
  *
@@ -21,6 +26,8 @@ import jakarta.servlet.http.HttpSession;
  */
 @WebServlet(name = "AdminController", urlPatterns = {"/AdminController"})
 public class AdminController extends HttpServlet {
+
+    public static String DEFAULT_GO = "home";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,21 +42,26 @@ public class AdminController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-        String cid = (String) session.getAttribute("cid");
-        if (cid == null){
-            response.sendError(403); //Forbidden
-            return;
-        }
-        DAOCustomer dao = new DAOCustomer();
-        Customer cus = dao.get(cid);
-        if (!cus.isAdmin()){
+        if (!SessionUtil.isSessionAdmin(session)) {
             response.sendError(403); //Forbidden
             return;
         }
         //Access is permitted
-        dispatch(request, response, "admin/index.jsp");
+        String go = request.getParameter("go");
+        if (go == null) {
+            go = DEFAULT_GO;
+        }
+        try {
+            if (go.equals("home")) {
+                dispatch(request, response, "admin/index.jsp");
+            } else if (go.equals("viewCustomer")) {
+                viewCustomer(request, response);
+            }
+        } catch (SQLException ex) {
+
+        }
     }
-    
+
     void dispatch(HttpServletRequest request, HttpServletResponse response, String url)
             throws ServletException, IOException {
         //call jsp
@@ -96,5 +108,35 @@ public class AdminController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private void viewCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        DAOCustomer dao = new DAOCustomer();
+        String sql = "SELECT * from Customer "
+                + "WHERE (cname like ? or username like ?) "
+                + "AND status != ? "
+                + "ORDER BY cid";
+        PreparedStatement prep = dao.getPrep(sql);
+        //Query
+        String query = request.getParameter("query");
+        if (query == null){
+            query = "";
+        }
+        prep.setString(1, "%" + query + "%");
+        prep.setString(2, "%" + query + "%");
+        request.setAttribute("query", query);
+        //Status
+        String status = request.getParameter("status");
+        int s;
+        try {
+            s = Integer.parseInt(status);
+        } catch (NumberFormatException ex){
+            s = -1;
+        }
+        prep.setInt(3, s);
+        request.setAttribute("status", s);
+        Vector<Customer> all = dao.getAll(prep);
+        request.setAttribute("list", all);
+        dispatch(request, response, "admin/viewCustomer.jsp");
+    }
 
 }
