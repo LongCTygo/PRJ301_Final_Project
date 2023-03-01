@@ -8,6 +8,6 @@ package utils;
  *
  * @author ADMIN
  */
-public class SQLErrorCodeUtil {
+public final class SQLErrorCodeUtil {
     public static int UNIQUE_KEY_VIOLATION = 2627;
 }

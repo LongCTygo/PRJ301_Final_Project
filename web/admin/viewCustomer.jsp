@@ -11,7 +11,7 @@
     Vector<Customer> list = (Vector<Customer>) request.getAttribute("list");
     String query = (String) request.getAttribute("query");
     Integer s = (Integer) request.getAttribute("status");
-    if (s==null){
+    if (s == null) {
         s = -1;
     }
 %>
@@ -21,6 +21,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>View Customer</title>
         <link rel="stylesheet" href="css/style.css"/>
+        <!-- Font Awesome -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     </head>
     <body>
         <jsp:include page="adminnavbar.jsp"></jsp:include>
@@ -53,7 +55,7 @@
                             <td><%= cus.getAddress()%></td>
                             <td><%= cus.getPhone()%></td>
                             <td><%= cus.getStatus() == 1 ? "Enabled" : "Disabled"%></td>
-                            <td class="text-center"><a href="" type="button" class="btn btn-info">Update</a></td>
+                            <td class="text-center"><a href="AdminController?go=update&data=<%= cus.getCid() %>" type="button" class="btn btn-info">Update</a></td>
                             <td class="text-center"><a href="" type="button" class="btn btn-danger">Remove</a></td>
                         </tr>
                         <%}%>
@@ -73,25 +75,25 @@
                     </div>
                     <!-- Radio -->
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" value="-1" id="All" <%= s==-1?"checked":"" %>>
+                        <input class="form-check-input" type="radio" name="status" value="-1" id="All" <%= s == -1 ? "checked" : ""%>>
                         <label class="form-check-label" for="All">
                             All
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" value="0" id="Enabled" <%= s==0?"checked":"" %>>
+                        <input class="form-check-input" type="radio" name="status" value="0" id="Enabled" <%= s == 0 ? "checked" : ""%>>
                         <label class="form-check-label" for="Enabled">
                             Enabled
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" value="1" id="Disabled" <%= s==1?"checked":"" %>>
+                        <input class="form-check-input" type="radio" name="status" value="1" id="Disabled" <%= s == 1 ? "checked" : ""%>>
                         <label class="form-check-label" for="Disabled">
                             Disabled
                         </label>
                     </div>
                 </form>
-                <a type="button" class="btn btn-primary mt-2">Add New Customer</a>
+                <a href="AdminController?go=addCustomer" type="button" class="btn btn-primary mt-2">Add New Customer</a>
             </div>
         </div>
         <!-- Table -->

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package mvc;
+package mvc.admin;
 
 import dao.DAOCustomer;
 import entity.Customer;
@@ -55,6 +55,10 @@ public class AdminController extends HttpServlet {
                 dispatch(request, response, "admin/index.jsp");
             } else if (go.equals("viewCustomer")) {
                 viewCustomer(request, response);
+            } else if (go.equals("addCustomer")){
+                addCustomer(request,response);
+            } else if (go.equals("updateCustomer")){
+                
             }
         } catch (SQLException ex) {
 
@@ -129,6 +133,11 @@ public class AdminController extends HttpServlet {
         Vector<Customer> all = dao.getAll(prep);
         request.setAttribute("list", all);
         dispatch(request, response, "admin/viewCustomer.jsp");
+    }
+
+    private void addCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("action", "add");
+        dispatch(request, response, "admin/formCustomer.jsp");
     }
 
 }

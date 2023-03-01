@@ -93,7 +93,6 @@ public class ClientController extends HttpServlet {
                 request.setAttribute("context", "404");
                 dispatch(request, response, "ErrorPage");
             }
-            System.out.println(session);
         } catch (Exception ex) {
             Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("context", "exception");

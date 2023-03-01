@@ -7,13 +7,14 @@ package utils;
 import dao.DAOCustomer;
 import entity.Customer;
 import jakarta.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.Hashtable;
 
 /**
  *
  * @author ADMIN
  */
-public final class SessionUtil {
+public final class SessionUtil{
     private SessionUtil(){}
     public static final String CART_ATTRIBUTE = "cart";
     public static final String USER_ATTRIBUTE = "cid";
