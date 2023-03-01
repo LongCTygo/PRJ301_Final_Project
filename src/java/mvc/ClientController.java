@@ -16,9 +16,7 @@ import entity.BillDetail;
 import entity.Customer;
 import entity.Product;
 import entity.Review;
-import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -35,6 +33,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.SQLErrorCodeUtil;
+import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
 
 /**
@@ -101,14 +100,6 @@ public class ClientController extends HttpServlet {
             request.setAttribute("exception", ex);
             dispatch(request, response, "ErrorPage");
         }
-    }
-
-    void dispatch(HttpServletRequest request, HttpServletResponse response, String url)
-            throws ServletException, IOException {
-        //call jsp
-        RequestDispatcher dispatch
-                = request.getRequestDispatcher(url);
-        dispatch.forward(request, response);
     }
 
     private void listShop(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {

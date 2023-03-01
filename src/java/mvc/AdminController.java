@@ -6,7 +6,6 @@ package mvc;
 
 import dao.DAOCustomer;
 import entity.Customer;
-import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,9 +14,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.util.Vector;
+import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
 
 /**
@@ -62,13 +61,6 @@ public class AdminController extends HttpServlet {
         }
     }
 
-    void dispatch(HttpServletRequest request, HttpServletResponse response, String url)
-            throws ServletException, IOException {
-        //call jsp
-        RequestDispatcher dispatch
-                = request.getRequestDispatcher(url);
-        dispatch.forward(request, response);
-    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

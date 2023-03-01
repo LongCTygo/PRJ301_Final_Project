@@ -25,7 +25,8 @@ public final class ServletUtil {
      * @param url The target URL
      * @throws ServletException if the target resource throws this exception
      * @throws IOException if the target resource throws this exception
-     * @see RequestDispatcher#forward
+     * @see RequestDispatcher#forward(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse) 
+     * @see HttpServletRequest#getRequestDispatcher(java.lang.String) 
      */
     public static void dispatch(HttpServletRequest request, HttpServletResponse response, String url) throws ServletException, IOException
  {

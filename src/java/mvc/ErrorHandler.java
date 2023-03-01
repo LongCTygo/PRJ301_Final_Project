@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import utils.ServletUtil;
 
 /**
  *
@@ -51,9 +52,7 @@ public class ErrorHandler extends HttpServlet {
             request.setAttribute("error", "Unknown Error Occured");
             request.setAttribute("summary", "Whoever send you here gave us no context to show you.");
         }
-        RequestDispatcher dispatch
-                = request.getRequestDispatcher("error/error.jsp");
-        dispatch.forward(request, response);
+        ServletUtil.dispatch(request, response, "error/error.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -94,14 +93,5 @@ public class ErrorHandler extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
-    
-    public String stackTraceToString(Throwable e) {
-    StringBuffer sb = new StringBuffer();
-    for (StackTraceElement element : e.getStackTrace()) {
-        sb.append(element.toString());
-        sb.append("\n");
-    }
-    return sb.toString();
-}
+
 }
