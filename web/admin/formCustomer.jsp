@@ -24,9 +24,10 @@
     </head>
     <body>
         <jsp:include page="adminnavbar.jsp"></jsp:include>
-        <div class="container mt-2">
-            <h3 class="text-center text-capitalize"><%=action%> Customer</h3>
-            <form>
+            <div class="container mt-2">
+                <h3 class="text-center text-capitalize"><%=action%> Customer</h3>
+            <form action="CustomerController" method="post">
+                <input type="hidden" name="go" value="<%= action%>">
                 <div class="form-group row">
                     <label class="col-4 col-form-label" for="cid">Customer ID</label> 
                     <div class="col-8">
@@ -36,7 +37,7 @@
                                     <i class="fa fa-user-circle"></i>
                                 </div>
                             </div> 
-                            <input id="cid" name="cid" placeholder="Enter cid..." type="text" class="form-control" required="required">
+                            <input value="<%= cus != null ? cus.getCid() : ""%>" id="cid" name="cid" placeholder="Enter cid..." type="text" class="form-control" required="required" <%= cus != null ? "readonly" : ""%>>
                         </div>
                     </div>
                 </div>
@@ -49,7 +50,7 @@
                                     <i class="fa fa-check"></i>
                                 </div>
                             </div> 
-                            <input value="<%= cus != null ? "readonly" : "" %>" id="cname" name="cname" placeholder="Enter cname..." type="text" class="form-control" required="required">
+                            <input value="<%= cus != null ? cus.getCname() : ""%>" id="cname" name="cname" placeholder="Enter cname..." type="text" class="form-control" required="required">
                         </div>
                     </div>
                 </div>
@@ -62,7 +63,7 @@
                                     <i class="fa fa-user"></i>
                                 </div>
                             </div> 
-                            <input id="username" name="username" placeholder="Enter username..." type="text" class="form-control" required="required">
+                            <input value="<%= cus != null ? cus.getUsername() : ""%>" id="username" name="username" placeholder="Enter username..." type="text" class="form-control" required="required">
                         </div>
                     </div>
                 </div>
@@ -75,7 +76,7 @@
                                     <i class="fa fa-lock"></i>
                                 </div>
                             </div> 
-                            <input id="password" name="password" placeholder="Enter password..." type="text" class="form-control" required="required">
+                            <input value="<%= cus != null ? cus.getPassword() : ""%>" id="password" name="password" placeholder="Enter password..." type="text" class="form-control" required="required">
                         </div>
                     </div>
                 </div>
@@ -88,7 +89,7 @@
                                     <i class="fa fa-home"></i>
                                 </div>
                             </div> 
-                            <input id="address" name="address" placeholder="Enter address..." type="text" class="form-control" required="required">
+                            <input value="<%= cus != null ? cus.getAddress() : ""%>" id="address" name="address" placeholder="Enter address..." type="text" class="form-control" required="required">
                         </div>
                     </div>
                 </div>
@@ -101,20 +102,33 @@
                                     <i class="fa fa-phone"></i>
                                 </div>
                             </div> 
-                            <input id="phone" name="phone" placeholder="Enter phone..." type="text" class="form-control" required="required">
+                            <input value="<%= cus != null ? cus.getPhone() : ""%>" id="phone" name="phone" placeholder="Enter phone..." type="text" class="form-control" required="required">
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-4">Radio Buttons</label> 
+                    <label class="col-4">Status</label> 
                     <div class="col-8">
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input name="status" id="status_0" type="radio" required="required" class="custom-control-input" value="1"> 
+                            <input name="status" id="status_0" type="radio" required="required" class="custom-control-input" value="1" <%= cus != null && cus.getStatus() == 1 ? "checked" : ""%>> 
                             <label for="status_0" class="custom-control-label">Enabled</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input name="status" id="status_1" type="radio" required="required" class="custom-control-input" value="0"> 
+                            <input name="status" id="status_1" type="radio" required="required" class="custom-control-input" value="0" <%= cus != null && cus.getStatus() == 0 ? "checked" : ""%>> 
                             <label for="status_1" class="custom-control-label">Disabled</label>
+                        </div>
+                    </div>
+                </div> 
+                <div class="form-group row">
+                    <label class="col-4">Admin</label> 
+                    <div class="col-8">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input name="isAdmin" id="isAdmin_0" type="radio" required="required" class="custom-control-input" value="1" <%= cus != null && cus.isAdmin() ? "checked" : ""%>> 
+                            <label for="isAdmin_0" class="custom-control-label">Yes</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input name="isAdmin" id="isAdmin_1" type="radio" required="required" class="custom-control-input" value="0" <%= cus != null && !cus.isAdmin() ? "checked" : ""%>> 
+                            <label for="isAdmin_1" class="custom-control-label">No</label>
                         </div>
                     </div>
                 </div> 

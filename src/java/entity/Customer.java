@@ -36,15 +36,11 @@ public class Customer {
         this.password = password;
         this.address = address;
         this.status = status;
+        this.phone = phone;
     }
     
     public Customer(String cid, String cname, String username, String password, String address, int status, String phone, int isAdmin) {
-        this.cid = cid;
-        this.cname = cname;
-        this.username = username;
-        this.password = password;
-        this.address = address;
-        this.status = status;
+        this(cid, cname, username, password, address, status, phone);
         this.isAdmin = isAdmin;
     }
 

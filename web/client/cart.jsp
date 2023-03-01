@@ -4,6 +4,8 @@
     Author     : ADMIN
 --%>
 
+<%@page import="utils.ServletUtil"%>
+<%@page import="utils.SessionUtil"%>
 <%@page import="java.util.Vector"%>
 <%@page import="entity.Product"%>
 <%@page import="java.util.Enumeration"%>
@@ -73,32 +75,10 @@
             <div class="row px-xl-5">
                 <div class="col-lg-8 table-responsive mb-5">
                     <div>
-                        <!-- Success -->
                         <%
-                            if (successes != null) {
-                                for (String msg : successes) {
+                            ServletUtil.printErrorMessages(request, out);
+                            ServletUtil.printSuccessMessages(request, out);
                         %>
-                        <div class="alert alert-success alert-dismissible fade show"" role="alert">
-                            <strong><%=msg%></strong>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <%}
-                            }%>
-                        <!-- Error -->
-                        <%
-                            if (errors != null) {
-                                for (String msg : errors) {
-                        %>
-                        <div class="alert alert-danger alert-dismissible fade show"" role="alert">
-                            <strong><%=msg%></strong>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <%}
-                            }%>
                     </div>
                     <form action="ClientController" method="post">
                         <input type="hidden" name="go" value="updateCart">

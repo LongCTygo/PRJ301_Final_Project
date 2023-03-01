@@ -4,6 +4,7 @@
     Author     : ADMIN
 --%>
 
+<%@page import="utils.ServletUtil"%>
 <%@page import="entity.Customer"%>
 <%@page import="java.util.Vector"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -28,6 +29,10 @@
         <jsp:include page="adminnavbar.jsp"></jsp:include>
             <div class="row mt-5">
                 <div class="col-9">
+                    <%
+                        ServletUtil.printErrorMessages(request, out);
+                        ServletUtil.printSuccessMessages(request, out);
+                    %>
                     <table class="table table-hover table-sm table-striped">
                         <thead class="thead-dark ">
                             <tr>
@@ -55,19 +60,19 @@
                             <td><%= cus.getAddress()%></td>
                             <td><%= cus.getPhone()%></td>
                             <td><%= cus.getStatus() == 1 ? "Enabled" : "Disabled"%></td>
-                            <td class="text-center"><a href="AdminController?go=update&data=<%= cus.getCid() %>" type="button" class="btn btn-info">Update</a></td>
-                            <td class="text-center"><a href="" type="button" class="btn btn-danger">Remove</a></td>
+                            <td class="text-center"><a href="CustomerController?go=update&id=<%= cus.getCid() %>" type="button" class="btn btn-info">Update</a></td>
+                            <td class="text-center"><a href="CustomerController?go=delete&id=<%= cus.getCid() %>" type="button" class="btn btn-danger">Remove</a></td>
                         </tr>
                         <%}%>
                     </tbody>
                 </table>
             </div>
             <div class="col-3"> 
-                <form action="AdminController">
+                <form action="CustomerController">
                     <!-- Search -->
                     <div class="input-group mb-3">
 
-                        <input type="hidden" name="go" value="viewCustomer">
+                        <input type="hidden" name="go" value="view">
                         <input name="query" type="text" value="<%=query%>" class="form-control" placeholder="Name or Username" aria-label="Name or Username" aria-describedby="button-addon2">
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary btn-success" type="submit" id="button-addon2">Search</button>
@@ -93,7 +98,7 @@
                         </label>
                     </div>
                 </form>
-                <a href="AdminController?go=addCustomer" type="button" class="btn btn-primary mt-2">Add New Customer</a>
+                <a href="CustomerController?go=add" type="button" class="btn btn-primary mt-2">Add New Customer</a>
             </div>
         </div>
         <!-- Table -->

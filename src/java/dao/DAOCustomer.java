@@ -48,8 +48,9 @@ public class DAOCustomer extends DAOEntity<Customer> {
                 + "           ,[password]\n"
                 + "           ,[address]\n"
                 + "           ,[status]\n"
-                + "           ,[phone])\n"
-                + "     VALUES(?,?,?,?,?,?,?)";
+                + "           ,[phone]\n"
+                + "           ,[isAdmin])\n"
+                + "     VALUES(?,?,?,?,?,?,?,?)";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             //set parameter
@@ -63,6 +64,7 @@ public class DAOCustomer extends DAOEntity<Customer> {
             pre.setString(5, customer.getAddress());
             pre.setInt(6, customer.getStatus());
             pre.setString(7, customer.getPhone());
+            pre.setInt(8, customer.getIsAdmin());
             n = pre.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,8 +82,8 @@ public class DAOCustomer extends DAOEntity<Customer> {
                 + "      ,[password] = ?\n"
                 + "      ,[address] = ?\n"
                 + "      ,[status] = ?\n"
-                + "           ,[phone])\n"
-                + "           ,[isAdmin])\n"
+                + "           ,[phone] = ?\n"
+                + "           ,[isAdmin] = ?\n"
                 + " WHERE [cid] = ?";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -114,7 +116,8 @@ public class DAOCustomer extends DAOEntity<Customer> {
                 String address = rs.getString("address");
                 int status = rs.getInt("status");
                 String phone = rs.getString("phone");
-                Customer cus = new Customer(cid, name, username, password, address, status, phone);
+                int isAdmin = rs.getInt("isAdmin");
+                Customer cus = new Customer(cid, name, username, password, address, status, phone,isAdmin);
                 vector.add(cus);
             }
         } catch (SQLException ex) {

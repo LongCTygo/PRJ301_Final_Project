@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package mvc;
+package mvc.client;
 
 import dao.DAOBill;
 import dao.DAOBillDetail;
@@ -33,6 +33,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.SQLErrorCodeUtil;
+import static utils.ServletUtil.addErrorMessage;
+import static utils.ServletUtil.addSuccessMessage;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
 
@@ -290,23 +292,6 @@ public class ClientController extends HttpServlet {
         dispatch(request, response, "ClientController?go=cart");
     }
 
-    private void addSuccessMessage(HttpServletRequest request, String msg) {
-        Vector<String> success = (Vector<String>) request.getAttribute("success");
-        if (success == null) {
-            success = new Vector<>();
-        }
-        success.add(msg);
-        request.setAttribute("success", success);
-    }
-
-    private void addErrorMessage(HttpServletRequest request, String msg) {
-        Vector<String> success = (Vector<String>) request.getAttribute("error");
-        if (success == null) {
-            success = new Vector<>();
-        }
-        success.add(msg);
-        request.setAttribute("error", success);
-    }
 
     private void checkout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         if (session == null || session.getAttribute("cid") == null) {
@@ -465,7 +450,7 @@ public class ClientController extends HttpServlet {
             String name = request.getParameter("name");
             String address = request.getParameter("address");
             String phone = request.getParameter("phone");
-            Customer cus = new Customer(username, name, username, password, address, 1, phone);
+            Customer cus = new Customer(username, name, username, password, address, 1, phone,0);
             int n = dao.add(cus);
             if (n == 1) {
                 addSuccessMessage(request, "Registered Successfully");

@@ -4,8 +4,7 @@
  */
 package mvc.admin;
 
-import dao.DAOCustomer;
-import entity.Customer;
+
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,9 +12,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Vector;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
 
@@ -50,19 +46,11 @@ public class AdminController extends HttpServlet {
         if (go == null) {
             go = DEFAULT_GO;
         }
-        try {
-            if (go.equals("home")) {
-                dispatch(request, response, "admin/index.jsp");
-            } else if (go.equals("viewCustomer")) {
-                viewCustomer(request, response);
-            } else if (go.equals("addCustomer")){
-                addCustomer(request,response);
-            } else if (go.equals("updateCustomer")){
-                
-            }
-        } catch (SQLException ex) {
-
-        }
+        if (go.equals("home")) {
+            dispatch(request, response, "admin/index.jsp");
+        } else {
+            response.sendRedirect("ClientController");
+        }  
     }
 
 
@@ -104,40 +92,5 @@ public class AdminController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private void viewCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        DAOCustomer dao = new DAOCustomer();
-        String sql = "SELECT * from Customer "
-                + "WHERE (cname like ? or username like ?) "
-                + "AND status != ? "
-                + "ORDER BY cid";
-        PreparedStatement prep = dao.getPrep(sql);
-        //Query
-        String query = request.getParameter("query");
-        if (query == null){
-            query = "";
-        }
-        prep.setString(1, "%" + query + "%");
-        prep.setString(2, "%" + query + "%");
-        request.setAttribute("query", query);
-        //Status
-        String status = request.getParameter("status");
-        int s;
-        try {
-            s = Integer.parseInt(status);
-        } catch (NumberFormatException ex){
-            s = -1;
-        }
-        prep.setInt(3, s);
-        request.setAttribute("status", s);
-        Vector<Customer> all = dao.getAll(prep);
-        request.setAttribute("list", all);
-        dispatch(request, response, "admin/viewCustomer.jsp");
-    }
-
-    private void addCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("action", "add");
-        dispatch(request, response, "admin/formCustomer.jsp");
-    }
 
 }

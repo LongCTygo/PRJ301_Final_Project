@@ -24,7 +24,7 @@
                     <a class="nav-item nav-link" href="#">Bill</a>
                     <a class="nav-item nav-link" href="#">Bill Detail</a>
                     <a class="nav-item nav-link" href="#">Category</a>
-                    <a class="nav-item nav-link" href="AdminController?go=viewCustomer">Customer</a>
+                    <a class="nav-item nav-link" href="CustomerController?go=view">Customer</a>
                     <a class="nav-item nav-link" href="#">Product</a>
                     <a class="nav-item nav-link" href="#">Review</a>
                 </div>
