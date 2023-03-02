@@ -42,14 +42,10 @@
                     String cid = (String) session.getAttribute("cid");
                     Customer cus = dao.get(cid);
                 %>
-                <% if (cus.isAdmin()){ %>
-                <a href="" class="nav-item nav-link">Hello, <%= cus.getCname() %>  <span class="badge badge-pill badge-danger">Admin</span></a>
-                <a href="AdminController" class="nav-item nav-link" style="color:red">To Admin Page</a>
-                <%} else {%>
                 <a href="" class="nav-item nav-link">Hello, <%= cus.getCname() %></a>
-                <%}%>
                 <a href="ClientController?go=logout" class="nav-item nav-link">Logout</a>
                 <%}%>
+                <a href="AdminViewController" class="nav-item nav-link text-danger">Admin</a>
             </div>
         </div>
     </body>

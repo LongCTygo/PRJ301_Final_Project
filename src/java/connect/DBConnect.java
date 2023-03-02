@@ -19,10 +19,14 @@ import java.util.logging.Logger;
  */
 public class DBConnect {
     
+    static final String DB_NAME = "FinalProjectShop";
+    static final String USER = "sa";
+    static final String PASSWORD = "123456";
+    
     public Connection conn = null;
     
     public DBConnect(){
-        this("jdbc:sqlserver://localhost:1433;databaseName=FinalProjectShop","sa","123456");
+        this("jdbc:sqlserver://localhost:1433;databaseName=" + DB_NAME,USER,PASSWORD);
     }
     
     public DBConnect(String url, String username, String password){

@@ -18,6 +18,7 @@ public final class SessionUtil{
     private SessionUtil(){}
     public static final String CART_ATTRIBUTE = "cart";
     public static final String USER_ATTRIBUTE = "cid";
+    public static final String ADMIN_ATTRIBUTE = "admin";
     
     /**
      * Get the hash table representing the cart of the current session. 
@@ -56,12 +57,6 @@ public final class SessionUtil{
     }
     
     public static boolean isSessionAdmin(HttpSession session){
-        String cid = (String) session.getAttribute(USER_ATTRIBUTE);
-        if (cid==null){
-            return false;
-        }
-        DAOCustomer dao = new DAOCustomer();
-        Customer cus = dao.get(cid);
-        return (cus != null && cus.getIsAdmin() == 1);
+        return session.getAttribute(ADMIN_ATTRIBUTE) != null;
     }
 }

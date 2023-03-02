@@ -98,6 +98,7 @@ public class DAOCustomer extends DAOEntity<Customer> {
             n = pre.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+            return ex.getErrorCode();
         }
         return n;
     }

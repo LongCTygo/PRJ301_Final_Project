@@ -97,4 +97,22 @@ public class DAOAdmin extends DAOEntity<Admin>{
         }
         return vector;
     }
+    
+    public String login(String user, String pass){
+        String sql = "select * from Admin where admin=? and "
+                + " password = ?";
+        PreparedStatement pre;
+        try {
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, user);
+            pre.setString(2, pass);
+            ResultSet rs = pre.executeQuery();
+            if (rs.next()) {
+                return rs.getString(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }

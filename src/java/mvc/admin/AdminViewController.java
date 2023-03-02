@@ -4,7 +4,8 @@
  */
 package mvc.admin;
 
-
+import dao.DAOAdmin;
+import entity.Admin;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
 
@@ -19,8 +21,8 @@ import utils.SessionUtil;
  *
  * @author ADMIN
  */
-@WebServlet(name = "AdminController", urlPatterns = {"/AdminController"})
-public class AdminController extends HttpServlet {
+@WebServlet(name = "AdminViewController", urlPatterns = {"/AdminViewController"})
+public class AdminViewController extends HttpServlet {
 
     public static String DEFAULT_GO = "home";
 
@@ -37,22 +39,37 @@ public class AdminController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-        if (!SessionUtil.isSessionAdmin(session)) {
-            response.sendError(403); //Forbidden
-            return;
-        }
         //Access is permitted
         String go = request.getParameter("go");
         if (go == null) {
             go = DEFAULT_GO;
         }
         if (go.equals("home")) {
+            if (!SessionUtil.isSessionAdmin(session)) {
+                dispatch(request, response, "admin/login.jsp");
+                return;
+            }
             dispatch(request, response, "admin/index.jsp");
+        } else if (go.equals("login")) {
+            String admin = (String) request.getParameter("admin");
+            String password = (String) request.getParameter("password");
+            DAOAdmin dao = new DAOAdmin();
+            String result = dao.login(admin, password);
+            if (result == null) {
+                //Fail
+                ServletUtil.addErrorMessage(request, "Username or password incorrect.");
+                dispatch(request, response, "admin/login.jsp");
+            } else {
+                session.setAttribute("admin", admin);
+                dispatch(request, response, "admin/index.jsp");
+            }
+        } else if (go.equals("logout")) {
+            session.invalidate();
+            dispatch(request, response, "admin/login.jsp");
         } else {
             response.sendRedirect("ClientController");
-        }  
+        }
     }
-
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

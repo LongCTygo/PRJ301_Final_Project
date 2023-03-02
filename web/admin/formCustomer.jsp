@@ -110,28 +110,16 @@
                     <label class="col-4">Status</label> 
                     <div class="col-8">
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input name="status" id="status_0" type="radio" required="required" class="custom-control-input" value="1" <%= cus != null && cus.getStatus() == 1 ? "checked" : ""%>> 
+                            <input name="status" id="status_0" type="radio" required="required" class="custom-control-input" value="1" <%= (cus != null && cus.getStatus() == 1) ? "checked" : ""%>> 
                             <label for="status_0" class="custom-control-label">Enabled</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input name="status" id="status_1" type="radio" required="required" class="custom-control-input" value="0" <%= cus != null && cus.getStatus() == 0 ? "checked" : ""%>> 
+                            <input name="status" id="status_1" type="radio" required="required" class="custom-control-input" value="0" <%= (cus != null && cus.getStatus() == 0) ? "checked" : ""%>> 
                             <label for="status_1" class="custom-control-label">Disabled</label>
                         </div>
                     </div>
                 </div> 
-                <div class="form-group row">
-                    <label class="col-4">Admin</label> 
-                    <div class="col-8">
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input name="isAdmin" id="isAdmin_0" type="radio" required="required" class="custom-control-input" value="1" <%= cus != null && cus.isAdmin() ? "checked" : ""%>> 
-                            <label for="isAdmin_0" class="custom-control-label">Yes</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input name="isAdmin" id="isAdmin_1" type="radio" required="required" class="custom-control-input" value="0" <%= cus != null && !cus.isAdmin() ? "checked" : ""%>> 
-                            <label for="isAdmin_1" class="custom-control-label">No</label>
-                        </div>
-                    </div>
-                </div> 
+                <input type="hidden" name="isAdmin" value="0">
                 <div class="form-group row">
                     <div class="offset-4 col-8">
                         <button name="submit" type="submit" class="btn btn-primary">Submit</button>
@@ -139,5 +127,17 @@
                 </div>
             </form>
         </div>
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+        <!-- Contact Javascript File -->
+        <script src="mail/jqBootstrapValidation.min.js"></script>
+        <script src="mail/contact.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
     </body>
 </html>

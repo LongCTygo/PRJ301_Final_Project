@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
@@ -45,7 +46,8 @@ public class CustomerController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
         if (!SessionUtil.isSessionAdmin(session)) {
-            response.sendError(403); //Forbidden
+            ServletUtil.addErrorMessage(request, "Please login first");
+            dispatch(request, response, "admin/login.jsp");
             return;
         }
         //Access is permitted
@@ -60,7 +62,7 @@ public class CustomerController extends HttpServlet {
                 add(request, response);
             } else if (go.equals("update")) {
                 update(request, response);
-            } else if (go.equals("delete")){
+            } else if (go.equals("delete")) {
                 delete(request, response);
             }
         } catch (SQLException ex) {
@@ -131,13 +133,13 @@ public class CustomerController extends HttpServlet {
             s = -1;
         }
         prep.setInt(3, s);
-        request.setAttribute("status", s);
+        request.setAttribute("query_status", s);
         Vector<Customer> all = dao.getAll(prep);
         request.setAttribute("list", all);
         dispatch(request, response, "admin/viewCustomer.jsp");
     }
 
-    private void add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         String submit = request.getParameter("submit");
         if (submit == null) {
             request.setAttribute("action", "add");
@@ -154,15 +156,18 @@ public class CustomerController extends HttpServlet {
             DAOCustomer dao = new DAOCustomer();
             int n = dao.add(cus);
             if (n == 1) {
-                response.sendRedirect("CustomerController");
+                ServletUtil.addSuccessMessage(request, "Successfully added user " + cus.getCid() + ".");
+            } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+                ServletUtil.addErrorMessage(request, "Failed to add user " + cus.getCid() + " since an user with such ID already exist.");
             } else {
-                dispatch(request, response, "admin/formCustomer.jsp");
+                ServletUtil.addErrorMessage(request, "Failed to add user " + cus.getCid() + ". Error = " + n + ".");
             }
+            view(request, response);
         }
 
     }
 
-    private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
         DAOCustomer dao = new DAOCustomer();
         String submit = request.getParameter("submit");
         if (submit == null) {
@@ -183,23 +188,26 @@ public class CustomerController extends HttpServlet {
             Customer cus = new Customer(cid, cname, username, password, address, status, phone, isAdmin);
             int n = dao.update(cus);
             if (n == 1) {
-                response.sendRedirect("CustomerController");
+                ServletUtil.addSuccessMessage(request, "Successfully updated user " + cus.getCid() + ".");
             } else {
-                dispatch(request, response, "admin/formCustomer.jsp");
+                ServletUtil.addErrorMessage(request, "Failed to update user " + cus.getCid() + ". Error code: "+ n + ".");
             }
+            view(request, response);
         }
     }
 
-    private void delete(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private void delete(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
         String id = request.getParameter("id");
-        if (id!=null){
+        if (id != null) {
             DAOCustomer dao = new DAOCustomer();
             int n = dao.remove(id);
-            if (n==1){
+            if (n == 1) {
                 ServletUtil.addSuccessMessage(request, "Successfully remove Customer with ID = " + id + ".");
+            } else {
+                ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
             }
         }
-        dispatch(request, response, "CustomerController?go=view");
+        view(request, response);
     }
 
 }
