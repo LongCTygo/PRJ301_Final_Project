@@ -56,7 +56,9 @@
                             <td><%= cus.getPassword()%></td>
                             <td><%= cus.getAddress()%></td>
                             <td><%= cus.getPhone()%></td>
-                            <td><%= cus.getStatus() == 1 ? "Enabled" : "Disabled"%></td>
+                            <td><%= cus.getStatus() == 1 ? 
+                                    "<span class=\"badge badge-pill badge-success\">Enabled</span>" : 
+                                    "<span class=\"badge badge-pill badge-danger\">Disabled</span>"%></td>
                             <td class="text-center"><a href="CustomerController?go=update&id=<%= cus.getCid()%>" type="button" class="btn btn-info">Update</a></td>
                             <td class="text-center"><a href="CustomerController?go=delete&id=<%= cus.getCid()%>" type="button" class="btn btn-danger">Remove</a></td>
                         </tr>

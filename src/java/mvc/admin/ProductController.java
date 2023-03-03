@@ -4,22 +4,20 @@
  */
 package mvc.admin;
 
-import dao.DAOCategory;
-import entity.Category;
+import dao.DAOProduct;
+import display.ProductDisplay;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
@@ -28,10 +26,11 @@ import utils.SessionUtil;
  *
  * @author ADMIN
  */
-@WebServlet(name = "CategoryController", urlPatterns = {"/CategoryController"})
-public class CategoryController extends HttpServlet {
-    
+@WebServlet(name = "ProductController", urlPatterns = {"/ProductController"})
+public class ProductController extends HttpServlet {
+
     public static final String DEFAULT_GO = "view";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,6 +42,7 @@ public class CategoryController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
         if (!SessionUtil.isSessionAdmin(session)) {
@@ -68,7 +68,6 @@ public class CategoryController extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(CustomerController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -111,8 +110,9 @@ public class CategoryController extends HttpServlet {
     }// </editor-fold>
 
     private void view(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-        DAOCategory dao = new DAOCategory();
-        String sql = "SELECT * from Category WHERE cateName like ? and status != ? ORDER BY cateId ASC";
+        DAOProduct dao = new DAOProduct();
+        String sql = "select * from Product as a join Category as b on a.cateID = b.cateID "
+                + "WHERE a.pname like ? and a.status != ? ORDER BY pid ASC";
         PreparedStatement prep = dao.getPrep(sql);
         //name
         String query = request.getParameter("query");
@@ -131,68 +131,22 @@ public class CategoryController extends HttpServlet {
         }
         prep.setInt(2, s);
         request.setAttribute("query_status", s);
-        Vector<Category> all = dao.getAll(prep);request.setAttribute("list", all);
-        dispatch(request, response, "admin/viewCategory.jsp");
+        Vector<ProductDisplay> all = dao.getDisplay(prep);
+        request.setAttribute("list", all);
+        dispatch(request, response, "admin/viewProduct.jsp");
+        
     }
 
-    private void add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        String submit = request.getParameter("submit");
-        if (submit == null) {
-            request.setAttribute("action", "add");
-            dispatch(request, response, "admin/formCategory.jsp");
-        } else {
-            String cname = request.getParameter("catename");
-            int status = Integer.parseInt(request.getParameter("status"));
-            Category cat = new Category(cname, status);
-            DAOCategory dao = new DAOCategory();
-            int n = dao.add(cat);
-            if (n == 1) {
-                ServletUtil.addSuccessMessage(request, "Successfully added category " + cat.getCateId() + ".");
-            } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
-                ServletUtil.addErrorMessage(request, "Failed to add category " + cat.getCateId() + " since a category with such ID already exist.");
-            } else {
-                ServletUtil.addErrorMessage(request, "Failed to add category " + cat.getCateId() + ". Error = " + n + ".");
-            }
-            view(request, response);
-        }
+    private void add(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        DAOCategory dao = new DAOCategory();
-        String submit = request.getParameter("submit");
-        if (submit == null) {
-            String id = request.getParameter("id");
-            Category cus = dao.get(id);
-            request.setAttribute("data", cus);
-            request.setAttribute("action", "update");
-            dispatch(request, response, "admin/formCategory.jsp");
-        } else {
-            int cateid = Integer.parseInt(request.getParameter("cateid"));
-            String catename = request.getParameter("catename");
-            int status = Integer.parseInt(request.getParameter("status"));
-            Category cus = new Category(cateid, catename, status);
-            int n = dao.update(cus);
-            if (n == 1) {
-                ServletUtil.addSuccessMessage(request, "Successfully updated user " + cus.getCateId() + ".");
-            } else {
-                ServletUtil.addErrorMessage(request, "Failed to update user " + cus.getCateId() + ". Error code: "+ n + ".");
-            }
-            view(request, response);
-        }
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    private void delete(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-        String id = request.getParameter("id");
-        if (id != null) {
-            DAOCategory dao = new DAOCategory();
-            int n = dao.remove(id);
-            if (n == 1) {
-                ServletUtil.addSuccessMessage(request, "Successfully remove Customer with ID = " + id + ".");
-            } else {
-                ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
-            }
-        }
-        view(request, response);
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

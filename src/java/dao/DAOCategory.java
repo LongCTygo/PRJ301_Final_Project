@@ -93,17 +93,10 @@ public class DAOCategory extends DAOEntity<Category> {
     @Override
     public int remove(String id) {
         int n = 0;
-        String sql = "delete from Category where cateId ='" + id + "'";
+        String sql = "delete from Category where cateId = " + id + "";
         try {
-            //note: Customer --1 ----n--> Bill -> Khong xoa duoc
-            //neu cid ton tai tren Bill
-            ResultSet rs = this.getData("Select * from Product where cateID='" + id + "'");
-            if (rs.next()) {
-                n = -1;
-            } else {
-                Statement state = conn.createStatement();
-                n = state.executeUpdate(sql);
-            }
+            Statement state = conn.createStatement();
+            n = state.executeUpdate(sql);
         } catch (SQLException ex) {
             Logger.getLogger(DAOCategory.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -131,5 +124,19 @@ public class DAOCategory extends DAOEntity<Category> {
             Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return vector;
+    }
+
+    public Category get(String id) {
+        try {
+            PreparedStatement statement = this.getPrep("SELECT * from Category where cateid = ?");
+            statement.setString(1, id);
+            Vector<Category> all = this.getAll(statement);
+            if (!all.isEmpty()) {
+                return all.get(0);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

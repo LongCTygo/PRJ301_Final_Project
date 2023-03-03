@@ -1,15 +1,15 @@
 <%-- 
-    Document   : viewCategory
+    Document   : viewCustomer
     Created on : Mar 1, 2023, 9:53:46 AM
     Author     : ADMIN
 --%>
 
-<%@page import="entity.Category"%>
 <%@page import="utils.ServletUtil"%>
+<%@page import="display.ProductDisplay"%>
 <%@page import="java.util.Vector"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    Vector<Category> list = (Vector<Category>) request.getAttribute("list");
+    Vector<ProductDisplay> list = (Vector<ProductDisplay>) request.getAttribute("list");
     String query = (String) request.getAttribute("query");
     Integer s = (Integer) request.getAttribute("query_status");
     if (s == null) {
@@ -20,7 +20,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>View Category</title>
+        <title>View Product</title>
         <link rel="stylesheet" href="css/style.css"/>
         <!-- Font Awesome -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -36,34 +36,45 @@
                 <table class="table table-hover table-sm table-striped">
                     <thead class="thead-dark ">
                         <tr>
-                            <th scope="col">CateID</th>
+                            <th scope="col">PID</th>
                             <th scope="col">Name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Description</th>
                             <th scope="col">Status</th>
                             <th scope="col" colspan="2" class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% for (Category cus : list) {%>
+                        <% for (ProductDisplay cus : list) {%>
                         <tr>
-                            <td scope="row"><%= cus.getCateId()%></td>
-                            <td><%= cus.getCateName()%></td>
+                            <td scope="row"><%= cus.getPid()%></td>
+                            <td><%= cus.getPname()%></td>
+                            <td><%= cus.getCate()%>  
+                            </td>
+                            <td><%= cus.getQuantity()%></td>
+                            <td><%= cus.getPriceFormat()%></td>
+                            <td><img src="img/<%= cus.getImage()%>" class="img-fluid"/></td>
+                            <td><%= cus.getDescription()%></td>
                             <td><%= cus.getStatus() == 1 ? 
                                     "<span class=\"badge badge-pill badge-success\">Enabled</span>" : 
                                     "<span class=\"badge badge-pill badge-danger\">Disabled</span>"%></td>
-                            <td class="text-center"><a href="CategoryController?go=update&id=<%= cus.getCateId()%>" type="button" class="btn btn-info">Update</a></td>
-                            <td class="text-center"><a href="CategoryController?go=delete&id=<%= cus.getCateId()%>" type="button" class="btn btn-danger">Remove</a></td>
+                            <td class="text-center"><a href="ProductController?go=update&id=<%= cus.getPid()%>" type="button" class="btn btn-info">Update</a></td>
+                            <td class="text-center"><a href="ProductController?go=delete&id=<%= cus.getPid()%>" type="button" class="btn btn-danger">Remove</a></td>
                         </tr>
                         <%}%>
                     </tbody>
                 </table>
             </div>
             <div class="col-3"> 
-                <form action="CategoryController">
+                <form action="ProductController">
                     <!-- Search -->
                     <div class="input-group mb-3">
 
                         <input type="hidden" name="go" value="view">
-                        <input name="query" type="text" value="<%=query%>" class="form-control" placeholder="Name" aria-label="Name or Username" aria-describedby="button-addon2">
+                        <input name="query" type="text" value="<%=query%>" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="button-addon2">
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary btn-success" type="submit" id="button-addon2">Search</button>
                         </div>
@@ -88,7 +99,7 @@
                         </label>
                     </div>
                 </form>
-                <a href="CategoryController?go=add" type="button" class="btn btn-primary mt-2">Add New Category</a>
+                <a href="ProductController?go=add" type="button" class="btn btn-primary mt-2">Add New Product</a>
 
             </div>
         </div>

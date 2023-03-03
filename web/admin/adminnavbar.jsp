@@ -24,12 +24,12 @@
                 <div class="navbar-nav">
                     <a class="nav-item nav-link" href="AdminViewController">Home</a>
                     <a class="nav-item nav-link" href="ClientController">To Client Page</a>
-                    <a class="nav-item nav-link" href="#">Bill</a>
-                    <a class="nav-item nav-link" href="#">Bill Detail</a>
-                    <a class="nav-item nav-link" href="#">Category</a>
+                    <a class="nav-item nav-link" href="BillController?go=view">Bill</a>
+                    <a class="nav-item nav-link" href="BillDetailController?go=view">Bill Detail</a>
+                    <a class="nav-item nav-link" href="CategoryController?go=view">Category</a>
                     <a class="nav-item nav-link" href="CustomerController?go=view">Customer</a>
-                    <a class="nav-item nav-link" href="#">Product</a>
-                    <a class="nav-item nav-link" href="#">Review</a>
+                    <a class="nav-item nav-link" href="ProductController?go=view">Product</a>
+                    <a class="nav-item nav-link" href="ReviewController?go=view">Review</a>
                 </div>
             </div>
             <div class="text-right">
