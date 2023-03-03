@@ -6,6 +6,7 @@ package mvc.admin;
 
 import dao.DAOProduct;
 import display.ProductDisplay;
+import entity.Product;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
@@ -134,19 +136,83 @@ public class ProductController extends HttpServlet {
         Vector<ProductDisplay> all = dao.getDisplay(prep);
         request.setAttribute("list", all);
         dispatch(request, response, "admin/viewProduct.jsp");
-        
+
     }
 
-    private void add(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void add(HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException {
+        String submit = request.getParameter("submit");
+        if (submit == null) {
+            request.setAttribute("action", "add");
+            dispatch(request, response, "admin/formProduct.jsp");
+        } else {
+            try {
+                String pid = request.getParameter("pid");
+                String pname = request.getParameter("pname");
+                int quantity = Integer.parseInt(request.getParameter("quantity"));
+                double price = Double.parseDouble(request.getParameter("price"));
+                String image = request.getParameter("image");
+                String description = request.getParameter("description");
+                int status = Integer.parseInt(request.getParameter("status"));
+                int cateid = Integer.parseInt(request.getParameter("cateid"));
+                Product pro = new Product(pid, pname, quantity, price, image, description, status, cateid);
+
+                DAOProduct dao = new DAOProduct();
+                int n = dao.add(pro);
+                if (n == 1) {
+                    ServletUtil.addSuccessMessage(request, "Successfully added product " + pro.getPid() + ".");
+                } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+                    ServletUtil.addErrorMessage(request, "Failed to add product " + pro.getPid() + " since a product with such ID already exist.");
+                } else {
+                    ServletUtil.addErrorMessage(request, "Failed to add product " + pro.getPid() + ". Error = " + n + ".");
+                }
+            } catch (NumberFormatException ex) {
+                ServletUtil.addErrorMessage(request, "Number Format was wrong. Message: " + ex.getMessage());
+            }
+            view(request, response);
+        }
     }
 
-    private void delete(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void delete(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        String id = request.getParameter("id");
+        if (id != null) {
+            DAOProduct dao = new DAOProduct();
+            int n = dao.remove(id);
+            if (n == 1) {
+                ServletUtil.addSuccessMessage(request, "Successfully remove Product with ID = " + id + ".");
+            } else {
+                ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
+            }
+        }
+        view(request, response);
     }
 
-    private void update(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        DAOProduct dao = new DAOProduct();
+        String submit = request.getParameter("submit");
+        if (submit == null) {
+            String id = request.getParameter("id");
+            Product cus = dao.get(id);
+            request.setAttribute("data", cus);
+            request.setAttribute("action", "update");
+            dispatch(request, response, "admin/formProduct.jsp");
+        } else {
+            String pid = request.getParameter("pid");
+            String pname = request.getParameter("pname");
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            double price = Double.parseDouble(request.getParameter("price"));
+            String image = request.getParameter("image");
+            String description = request.getParameter("description");
+            int status = Integer.parseInt(request.getParameter("status"));
+            int cateid = Integer.parseInt(request.getParameter("cateid"));
+            Product pro = new Product(pid, pname, quantity, price, image, description, status, cateid);
+            int n = dao.update(pro);
+            if (n == 1) {
+                ServletUtil.addSuccessMessage(request, "Successfully updated product " + pid + ".");
+            } else {
+                ServletUtil.addErrorMessage(request, "Failed to update product " + pid + ". Error code: " + n + ".");
+            }
+            view(request, response);
+        }
     }
 
 }

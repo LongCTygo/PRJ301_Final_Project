@@ -127,15 +127,11 @@ public class DAOProduct extends DAOEntity<Product> {
     @Override
     public int remove(String id) {
         int n = 0;
-        String sql = "delete from Product where pid ='" + id + "'";
+        String del = "delete from Product where pid = ?";
         try {
-            ResultSet rs = this.getData("Select * from BillDetail where pid='" + id);
-            if (rs.next()) {
-                n = -1;
-            } else {
-                Statement state = conn.createStatement();
-                n = state.executeUpdate(sql);
-            }
+            PreparedStatement pre = this.getPrep(del);
+            pre.setString(1, id);
+            n = pre.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DAOCategory.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -170,7 +166,7 @@ public class DAOProduct extends DAOEntity<Product> {
         }
         return vector;
     }
-    
+
     public Vector<ProductDisplay> getDisplay(PreparedStatement statement) {
         Vector<ProductDisplay> vector = new Vector<>();
         try {
@@ -220,13 +216,13 @@ public class DAOProduct extends DAOEntity<Product> {
         }
         return vector;
     }
-    
-    public Product get(String pid){
+
+    public Product get(String pid) {
         try {
             PreparedStatement statement = this.getPrep("SELECT * from Product where pid = ?");
             statement.setString(1, pid);
             Vector<Product> all = this.getAll(statement);
-            if (!all.isEmpty()){
+            if (!all.isEmpty()) {
                 return all.get(0);
             }
         } catch (SQLException ex) {

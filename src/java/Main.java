@@ -1,6 +1,9 @@
 
 import connect.DBConnect;
+import dao.DAOBill;
 import dao.DAOProduct;
+import display.BillDisplay;
+import java.util.Vector;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -14,6 +17,8 @@ import dao.DAOProduct;
  */
 public class Main {
     public static void main(String[] args) {
-        DAOProduct n = new DAOProduct();
+        DAOBill dao = new DAOBill();
+        Vector<BillDisplay> display = dao.getDisplay();
+        System.out.println(display.size());
     }
 }
