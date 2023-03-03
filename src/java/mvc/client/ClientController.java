@@ -385,9 +385,11 @@ public class ClientController extends HttpServlet {
         String address = cus.getAddress();
         String phone = cus.getPhone();
         String note = ""; // TODO 
-        int status = 1;
+        int status = 0;
         Bill bill = new Bill(bid, address, phone, note, status, cid);
-        daoBill.add(bill);
+        int n = daoBill.add(bill);
+        //Total money
+        double totalMoney = 0;
         //Go through all elements
         while (keys.hasMoreElements()) {
             String pid = keys.nextElement();
@@ -404,7 +406,12 @@ public class ClientController extends HttpServlet {
             int oldQuantity = pro.getQuantity();
             pro.setQuantity(oldQuantity - amount);
             daoPro.update(pro);
+            //add to total
+            totalMoney += subtotal;
         }
+        //Update the previous bill with the total amount
+        bill.setTotalMoney(totalMoney);
+        daoBill.update(bill);
         //Wipe cart
         cart.clear();
         session.setAttribute("cart", cart);

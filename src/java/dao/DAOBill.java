@@ -42,24 +42,22 @@ public class DAOBill extends DAOEntity<Bill> {
         int n = 0;
         String sql = "INSERT INTO [dbo].[Bill]\n"
                 + "           ([bid]\n"
-                + "           ,[dateCreate]\n"
                 + "           ,[recAddress]\n"
                 + "           ,[recPhone]\n"
                 + "           ,[note]\n"
                 + "           ,[totalMoney]\n"
                 + "           ,[status]\n"
                 + "           ,[cid])\n"
-                + "     VALUES(?,?,?,?,?,?,?,?)";
+                + "     VALUES(?,?,?,?,?,?,?)";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, bill.getBid());
-            pre.setString(2, bill.getDateCreate());
-            pre.setString(3, bill.getRecAddress());
-            pre.setString(4, bill.getRecPhone());
-            pre.setString(5, bill.getNote());
-            pre.setDouble(6, bill.getTotalMoney());
-            pre.setInt(7, bill.getStatus());
-            pre.setString(8, bill.getCid());
+            pre.setString(2, bill.getRecAddress());
+            pre.setString(3, bill.getRecPhone());
+            pre.setString(4, bill.getNote());
+            pre.setDouble(5, bill.getTotalMoney());
+            pre.setInt(6, bill.getStatus());
+            pre.setString(7, bill.getCid());
             n = pre.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DAOBill.class.getName()).log(Level.SEVERE, null, ex);
@@ -72,8 +70,7 @@ public class DAOBill extends DAOEntity<Bill> {
     public int update(Bill bill) {
         int n = 0;
         String sql = "UPDATE [dbo].[Bill]\n"
-                + "   SET [dateCreate] = ?\n"
-                + "      ,[recAddress] = ?\n"
+                + "   SET [recAddress] = ?\n"
                 + "      ,[recPhone] = ?\n"
                 + "      ,[note] = ?\n"
                 + "      ,[totalMoney] = ?\n"
@@ -82,14 +79,13 @@ public class DAOBill extends DAOEntity<Bill> {
                 + " WHERE [bid] = ?";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
-            pre.setString(1, bill.getDateCreate());
-            pre.setString(2, bill.getRecAddress());
-            pre.setString(3, bill.getRecPhone());
-            pre.setString(4, bill.getNote());
-            pre.setDouble(5, bill.getTotalMoney());
-            pre.setInt(6, bill.getStatus());
-            pre.setString(7, bill.getCid());
-            pre.setString(8, bill.getBid());
+            pre.setString(1, bill.getRecAddress());
+            pre.setString(2, bill.getRecPhone());
+            pre.setString(3, bill.getNote());
+            pre.setDouble(4, bill.getTotalMoney());
+            pre.setInt(5, bill.getStatus());
+            pre.setString(6, bill.getCid());
+            pre.setString(7, bill.getBid());
             n = pre.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DAOBill.class.getName()).log(Level.SEVERE, null, ex);
@@ -181,8 +177,10 @@ public class DAOBill extends DAOEntity<Bill> {
                 String cid = rs.getString("cid");
                 String bid = rs.getString("bid");
                 String username = rs.getString("username");
-                BillDisplay bill = new BillDisplay(username, bid, dateCreate, 
-                        recAddress, recPhone, note, totalMoney, status, cid);
+                String cname = rs.getString("cname");
+                BillDisplay bill = new BillDisplay(username, cname, bid, 
+                        dateCreate, recAddress, recPhone, note, 
+                        totalMoney, status, cid);
                 vector.add(bill);
             }
         } catch (SQLException ex) {

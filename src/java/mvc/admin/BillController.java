@@ -4,13 +4,25 @@
  */
 package mvc.admin;
 
+import dao.DAOBill;
+import dao.DAOBillDetail;
+import display.BillDisplay;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import utils.ServletUtil;
+import static utils.ServletUtil.dispatch;
+import utils.SessionUtil;
 
 /**
  *
@@ -18,7 +30,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "BillController", urlPatterns = {"/BillController"})
 public class BillController extends HttpServlet {
-
+    
+    public static final String DEFAULT_GO = "view";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,17 +45,29 @@ public class BillController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet BillController</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet BillController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        HttpSession session = request.getSession();
+        if (!SessionUtil.isSessionAdmin(session)) {
+            ServletUtil.addErrorMessage(request, "Please login first");
+            dispatch(request, response, "admin/login.jsp");
+            return;
+        }
+        //Access is permitted
+        String go = request.getParameter("go");
+        if (go == null) {
+            go = DEFAULT_GO;
+        }
+        try {
+            if (go.equals("view")) {
+                view(request, response);
+            } else if (go.equals("add")) {
+                add(request, response);
+            } else if (go.equals("update")) {
+                update(request, response);
+            } else if (go.equals("delete")) {
+                delete(request, response);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -83,5 +109,62 @@ public class BillController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private void view(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        DAOBill dao = new DAOBill();
+        String sql = "SELECT * from Bill a join Customer b on a.cid = b.cid "
+                + "WHERE b.username like ? "
+                + "AND a.status != ? "
+                + "ORDER BY a.cid";
+        PreparedStatement prep = dao.getPrep(sql);
+        //Query
+        String query = request.getParameter("query");
+        if (query == null) {
+            query = "";
+        }
+        prep.setString(1, "%" + query + "%");
+        request.setAttribute("query", query);
+        //Status
+        String status = request.getParameter("status");
+        int s;
+        try {
+            s = Integer.parseInt(status);
+        } catch (NumberFormatException ex) {
+            s = -1;
+        }
+        prep.setInt(2, s);
+        request.setAttribute("query_status", s);
+        Vector<BillDisplay> all = dao.getDisplay(prep);
+        request.setAttribute("list", all);
+        dispatch(request, response, "admin/viewBill.jsp");
+    }
+
+    private void add(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void delete(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        //For bill, it must delete all billdetails first
+        String id = request.getParameter("id");
+        if (id != null) {
+            DAOBill dao = new DAOBill();
+            ///Remove bill details
+            PreparedStatement statement = dao.getPrep("DELETE FROM BillDetail where bid = ?");
+            statement.setString(1, id);
+            statement.execute();
+            //Remove the bill
+            int n = dao.remove(id);
+            if (n == 1) {
+                ServletUtil.addSuccessMessage(request, "Successfully remove Bill with ID = " + id + ".");
+            } else {
+                ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
+            }
+        }
+        view(request, response);
+    }
 
 }
