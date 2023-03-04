@@ -33,6 +33,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.SQLErrorCodeUtil;
+import utils.ServletUtil;
 import static utils.ServletUtil.addErrorMessage;
 import static utils.ServletUtil.addSuccessMessage;
 import static utils.ServletUtil.dispatch;
@@ -81,6 +82,10 @@ public class ClientController extends HttpServlet {
                 addCart(request, response, session);
             } else if (go.equals("updateCart")) {
                 updateCart(request, response, session);
+            } else if (go.equals("wipeCart")) {
+                SessionUtil.clearCart(session);
+                ServletUtil.addSuccessMessage(request, "Cleared the cart!");
+                dispatch(request, response, "ClientController?go=cart");
             } else if (go.equals("checkout")) {
                 checkout(request, response, session);
             } else if (go.equals("login")) {
@@ -108,7 +113,7 @@ public class ClientController extends HttpServlet {
         int params = 1;
         //Initial SQL
         String sql = "select * from Product join Category on Product.cateID = Category.cateID\n"
-                + "WHERE Product.pname LIKE ? ";
+                + "WHERE Product.status = 1 AND Product.pname LIKE ? ";
         //Search
         String query = request.getParameter("query");
         if (query == null) {
@@ -156,7 +161,7 @@ public class ClientController extends HttpServlet {
                 Vector<ReviewDisplay> revVec = daoRev.getDisplay(statementRev);
                 request.setAttribute("reviews", revVec);
                 //Suggestions
-                PreparedStatement statementSug = daoPro.conn.prepareStatement("select * from Product as a join Category as b on a.cateID = b.cateID WHERE a.quantity > 0 AND a.pid != ? ORDER By newID()");
+                PreparedStatement statementSug = daoPro.conn.prepareStatement("select TOP 6 * from Product as a join Category as b on a.cateID = b.cateID WHERE a.status = 1 AND a.quantity > 0 AND a.pid != ? ORDER By newID()");
                 statementSug.setString(1, pid);
                 Vector<ProductDisplay> suggestions = daoPro.getDisplay(statementSug);
                 request.setAttribute("suggestions", suggestions);
@@ -292,7 +297,6 @@ public class ClientController extends HttpServlet {
         dispatch(request, response, "ClientController?go=cart");
     }
 
-
     private void checkout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         if (session == null || session.getAttribute("cid") == null) {
             toLogin(request, response);
@@ -413,8 +417,7 @@ public class ClientController extends HttpServlet {
         bill.setTotalMoney(totalMoney);
         daoBill.update(bill);
         //Wipe cart
-        cart.clear();
-        session.setAttribute("cart", cart);
+        SessionUtil.clearCart(session);
     }
 
     private void review(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
@@ -457,7 +460,7 @@ public class ClientController extends HttpServlet {
             String name = request.getParameter("name");
             String address = request.getParameter("address");
             String phone = request.getParameter("phone");
-            Customer cus = new Customer(username, name, username, password, address, 1, phone,0);
+            Customer cus = new Customer(username, name, username, password, address, 1, phone, 0);
             int n = dao.add(cus);
             if (n == 1) {
                 addSuccessMessage(request, "Registered Successfully");

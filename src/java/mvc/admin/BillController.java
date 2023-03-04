@@ -17,6 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +34,9 @@ import utils.SessionUtil;
  */
 @WebServlet(name = "BillController", urlPatterns = {"/BillController"})
 public class BillController extends HttpServlet {
-    
+
     public static final String DEFAULT_GO = "view";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -114,7 +118,7 @@ public class BillController extends HttpServlet {
         DAOBill dao = new DAOBill();
         String sql = "SELECT * from Bill a join Customer b on a.cid = b.cid "
                 + "WHERE b.username like ? "
-                + "AND a.status != ? "
+                + "AND a.status in (?,?,?) "
                 + "ORDER BY a.cid";
         PreparedStatement prep = dao.getPrep(sql);
         //Query
@@ -126,14 +130,26 @@ public class BillController extends HttpServlet {
         request.setAttribute("query", query);
         //Status
         String status = request.getParameter("status");
-        int s;
+        boolean isSearchAll = false;
+        int s = -1;
         try {
             s = Integer.parseInt(status);
+            if (s >= 0 && s <= 2) {
+                for (int i = 2; i < 5; i++){
+                    prep.setInt(i, s);
+                }
+            } else {
+                isSearchAll = true;
+            }
         } catch (NumberFormatException ex) {
-            s = -1;
+            isSearchAll = true;
         }
-        prep.setInt(2, s);
-        request.setAttribute("query_status", s);
+        if (isSearchAll){
+            prep.setInt(2, 0);
+            prep.setInt(3, 1);
+            prep.setInt(4, 2);
+        }
+        request.setAttribute("query_status", isSearchAll ? -1 : s);
         Vector<BillDisplay> all = dao.getDisplay(prep);
         request.setAttribute("list", all);
         dispatch(request, response, "admin/viewBill.jsp");

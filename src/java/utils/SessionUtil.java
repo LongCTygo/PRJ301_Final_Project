@@ -15,6 +15,8 @@ import java.util.Hashtable;
  * @author ADMIN
  */
 public final class SessionUtil{
+
+    
     private SessionUtil(){}
     public static final String CART_ATTRIBUTE = "cart";
     public static final String USER_ATTRIBUTE = "cid";
@@ -47,6 +49,15 @@ public final class SessionUtil{
     }
     
     /**
+     * Clear the cart.
+     * @param session The current session
+     * @throws NullPointerException if the session is null
+     */
+    public static void clearCart(HttpSession session) {
+        session.removeAttribute(CART_ATTRIBUTE);
+    }
+    
+    /**
      * Check if the current session is logged in.
      * @param session
      * @return whether the user is logged in or not.
@@ -56,6 +67,12 @@ public final class SessionUtil{
         return session.getAttribute(USER_ATTRIBUTE) != null;
     }
     
+    /**
+     * Check if the current session is an admin.
+     * @param session
+     * @return whether the user is an admin or not.
+     * @throws NullPointerException if the session is null
+     */
     public static boolean isSessionAdmin(HttpSession session){
         return session.getAttribute(ADMIN_ATTRIBUTE) != null;
     }

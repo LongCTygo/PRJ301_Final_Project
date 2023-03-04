@@ -78,15 +78,21 @@
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" value="0" id="Enabled" <%= s == 0 ? "checked" : ""%>>
-                        <label class="form-check-label" for="Enabled">
-                            Enabled
+                        <input class="form-check-input" type="radio" name="status" value="0" id="Wait" <%= s == 0 ? "checked" : ""%>>
+                        <label class="form-check-label" for="Wait">
+                            Wait
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" value="1" id="Disabled" <%= s == 1 ? "checked" : ""%>>
-                        <label class="form-check-label" for="Disabled">
-                            Disabled
+                        <input class="form-check-input" type="radio" name="status" value="1" id="Process" <%= s == 1 ? "checked" : ""%>>
+                        <label class="form-check-label" for="Process">
+                            Process
+                        </label>
+                    </div>
+                        <div class="form-check">
+                        <input class="form-check-input" type="radio" name="status" value="2" id="Finished" <%= s == 2 ? "checked" : ""%>>
+                        <label class="form-check-label" for="Finished">
+                            Finished
                         </label>
                     </div>
                 </form>

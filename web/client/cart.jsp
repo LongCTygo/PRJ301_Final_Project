@@ -98,7 +98,7 @@
                                         subtotal += p;
                                 %>
                                 <tr>
-                                    <td class="align-middle"><img src="img/<%= pro.getImage()%>" alt="" style="width: 50px;"><a href="ClientController?go=detail&pid=<%= pro.getPid() %>"><%= pro.getPname()%></a></td>
+                                    <td class="align-middle"><img src="img/<%= pro.getImage()%>" alt="" style="width: 50px;"><a href="ClientController?go=detail&pid=<%= pro.getPid()%>"><%= pro.getPname()%></a></td>
                                     <td class="align-middle"><%= pro.getPriceFormat()%></td>
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
@@ -121,10 +121,13 @@
                                 <%}%>
                             </tbody>
                         </table>
-                        <div class="input-group-append">
+                        <div class="input-group-append mt-2">
                             <button class="btn btn-primary">Update Your Cart</button>
                         </div>
                     </form>
+                    <div class="input-group-append mt-2">
+                        <a href="ClientController?go=wipeCart" class="btn btn-primary">Clear Cart</a>
+                    </div>
                 </div>
                 <div class="col-lg-4">
                     <%
