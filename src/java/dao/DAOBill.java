@@ -198,4 +198,19 @@ public class DAOBill extends DAOEntity<Bill> {
         }
         return null;
     }
+    
+    public BillDisplay get(String bid) {
+        try {
+            PreparedStatement statement = this.getPrep("SELECT * from Bill a join Customer b on a.cid = b.cid where bid = ?");
+            statement.setString(1, bid);
+            Vector<BillDisplay> all = this.getDisplay(statement);
+            if (!all.isEmpty()) {
+                return all.get(0);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
 }

@@ -1,6 +1,7 @@
 package dao;
 
 import connect.DAOEntity;
+import display.BillDetailDisplay;
 import entity.BillDetail;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -114,5 +115,36 @@ public class DAOBillDetail extends DAOEntity<BillDetail> {
             Logger.getLogger(DAOCustomer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return vector;
+    }
+    
+    public Vector<BillDetailDisplay> getDisplay(PreparedStatement statement){
+        Vector<BillDetailDisplay> vector = new Vector<>();
+        try {
+            ResultSet rs = this.getData(statement);
+            while (rs.next()) {
+                String pname = rs.getString("pname");
+                String bid = rs.getString("bid");
+                String pid = rs.getString("pid");
+                String image = rs.getString("image");
+                int quantity = rs.getInt("quantity");
+                double price = rs.getDouble("price");
+                double subtotal = rs.getDouble("subtotal");
+                BillDetailDisplay bdd = new BillDetailDisplay(pname, bid, pid, image, quantity, price, subtotal);
+                vector.add(bdd);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return vector;
+    }
+    
+    public Vector<BillDetailDisplay> getDisplay(){
+        try {
+            PreparedStatement statement = this.getPrep("SELECT * from BillDetail a join Product b on a.pid = b.pid");
+            return getDisplay(statement);
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOBillDetail.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Vector<>();
     }
 }
