@@ -5,9 +5,12 @@
 package mvc.admin;
 
 import dao.DAOBill;
-import display.BillDisplay;
+import dao.DAOBillDetail;
+import display.BillDetailDisplay;
+import entity.Bill;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,8 +29,8 @@ import utils.SessionUtil;
  *
  * @author ADMIN
  */
-@WebServlet(name = "BillController", urlPatterns = {"/BillController"})
-public class BillController extends HttpServlet {
+@WebServlet(name = "BillDetailController", urlPatterns = {"/BillDetailController"})
+public class BillDetailController extends HttpServlet {
 
     public static final String DEFAULT_GO = "view";
 
@@ -49,7 +52,7 @@ public class BillController extends HttpServlet {
             dispatch(request, response, "admin/login.jsp");
             return;
         }
-        //Access is permitted
+        //
         String go = request.getParameter("go");
         if (go == null) {
             go = DEFAULT_GO;
@@ -57,6 +60,8 @@ public class BillController extends HttpServlet {
         try {
             if (go.equals("view")) {
                 view(request, response, true);
+            } else if (go.equals("viewDetail")) {
+                viewDetail(request, response);
             } else if (go.equals("add")) {
                 add(request, response);
             } else if (go.equals("update")) {
@@ -110,45 +115,8 @@ public class BillController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void view(HttpServletRequest request, HttpServletResponse response, boolean isDirect) throws ServletException, IOException, SQLException {
-        DAOBill dao = new DAOBill();
-        String sql = "SELECT * from Bill a join Customer b on a.cid = b.cid "
-                + "WHERE b.username like ? "
-                + "AND a.status in (?,?,?) "
-                + "ORDER BY a.cid";
-        PreparedStatement prep = dao.getPrep(sql);
-        //Query
-        String query = request.getParameter("query");
-        if (query == null) {
-            query = "";
-        }
-        prep.setString(1, "%" + query + "%");
-        request.setAttribute("query", query);
-        //Status
-        String status = isDirect ? request.getParameter("status") : "-1";
-        boolean isSearchAll = false;
-        int s = -1;
-        try {
-            s = Integer.parseInt(status);
-            if (s >= 0 && s <= 2) {
-                for (int i = 2; i < 5; i++){
-                    prep.setInt(i, s);
-                }
-            } else {
-                isSearchAll = true;
-            }
-        } catch (NumberFormatException ex) {
-            isSearchAll = true;
-        }
-        if (isSearchAll){
-            prep.setInt(2, 0);
-            prep.setInt(3, 1);
-            prep.setInt(4, 2);
-        }
-        request.setAttribute("query_status", isSearchAll ? -1 : s);
-        Vector<BillDisplay> all = dao.getDisplay(prep);
-        request.setAttribute("list", all);
-        dispatch(request, response, "admin/viewBill.jsp");
+    private void view(HttpServletRequest request, HttpServletResponse response, boolean b) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private void add(HttpServletRequest request, HttpServletResponse response) {
@@ -159,28 +127,27 @@ public class BillController extends HttpServlet {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    private void delete(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-        //For bill, it must delete all billdetails first
-        String id = request.getParameter("id");
-        if (id != null) {
-            DAOBill dao = new DAOBill();
-            ///Remove bill details
-            PreparedStatement statement = dao.getPrep("DELETE FROM BillDetail where bid = ?");
-            statement.setString(1, id);
-            statement.execute();
-            //Remove the bill
-            int n = dao.remove(id);
-            if (n == 1) {
-                ServletUtil.addSuccessMessage(request, "Successfully remove Bill with ID = " + id + ".");
-            } else {
-                ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
-            }
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void viewDetail(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        //Get the bill
+        String bid = request.getParameter("id");
+        if (bid == null){
+            ServletUtil.addErrorMessage(request, "No Bill ID was given.");
+            dispatch(request, response, "admin/viewBill.jsp");
+            return;
         }
-        view(request, response);
+        DAOBill daob = new DAOBill();
+        request.setAttribute("bill", daob.get(bid));
+        //Get all bill detail
+        DAOBillDetail daobd = new DAOBillDetail();
+        PreparedStatement statement = daobd.getPrep("SELECT * from BillDetail a join Product b on a.pid = b.pid WHERE a.bid = ?");
+        statement.setString(1, bid);
+        Vector<BillDetailDisplay> billDetails = daobd.getDisplay(statement);
+        //Set attributes for the display tab
+        request.setAttribute("list", billDetails);
+        dispatch(request, response, "admin/billDetail.jsp");
     }
-
-    private void view(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        view(request, response, false);
-    }
-
 }

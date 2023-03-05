@@ -52,7 +52,7 @@
                             <td><%= cus.getDateCreate()%></td>
                             <td><%= cus.getTotalMoney()%></td>
                             <td class="text-center"><%= status(cus.getStatus()) %></td>
-                            <td class="text-center"><a href="BillController?go=update&id=<%= cus.getBid()%>" type="button" class="btn btn-info">Update</a></td>
+                            <td class="text-center"><a href="BillDetailController?go=viewDetail&id=<%= cus.getBid()%>" type="button" class="btn btn-primary">Detail</a></td>
                             <td class="text-center"><a href="BillController?go=delete&id=<%= cus.getBid()%>" type="button" class="btn btn-danger">Remove</a></td>
                         </tr>
                         <%}%>
@@ -96,7 +96,7 @@
                         </label>
                     </div>
                 </form>
-                <a href="BillController?go=add" type="button" class="btn btn-primary mt-2">Add New Product</a>
+<!--                <a href="BillController?go=add" type="button" class="btn btn-primary mt-2">Add New Product</a>-->
 
             </div>
         </div>

@@ -57,7 +57,7 @@ public class CustomerController extends HttpServlet {
         }
         try {
             if (go.equals("view")) {
-                view(request, response);
+                view(request, response, true);
             } else if (go.equals("add")) {
                 add(request, response);
             } else if (go.equals("update")) {
@@ -109,7 +109,7 @@ public class CustomerController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void view(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+    private void view(HttpServletRequest request, HttpServletResponse response, boolean isDirect) throws ServletException, IOException, SQLException {
         DAOCustomer dao = new DAOCustomer();
         String sql = "SELECT * from Customer "
                 + "WHERE (cname like ? or username like ?) "
@@ -125,7 +125,7 @@ public class CustomerController extends HttpServlet {
         prep.setString(2, "%" + query + "%");
         request.setAttribute("query", query);
         //Status
-        String status = request.getParameter("status");
+        String status = isDirect ? request.getParameter("status") : "-1";
         int s;
         try {
             s = Integer.parseInt(status);
@@ -209,5 +209,8 @@ public class CustomerController extends HttpServlet {
         }
         view(request, response);
     }
-
+    
+    private void view(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        view(request, response, false);
+    }
 }

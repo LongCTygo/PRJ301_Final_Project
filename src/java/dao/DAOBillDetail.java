@@ -126,8 +126,8 @@ public class DAOBillDetail extends DAOEntity<BillDetail> {
                 String bid = rs.getString("bid");
                 String pid = rs.getString("pid");
                 String image = rs.getString("image");
-                int quantity = rs.getInt("quantity");
-                double price = rs.getDouble("price");
+                int quantity = rs.getInt("buyquantity");
+                double price = rs.getDouble("buyPrice");
                 double subtotal = rs.getDouble("subtotal");
                 BillDetailDisplay bdd = new BillDetailDisplay(pname, bid, pid, image, quantity, price, subtotal);
                 vector.add(bdd);

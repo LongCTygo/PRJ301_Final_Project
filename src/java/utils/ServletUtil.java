@@ -68,7 +68,6 @@ public final class ServletUtil {
     public static void printErrorMessages(HttpServletRequest request, JspWriter out) {
         Object ob = request.getAttribute(ERROR_MSG_ATTRIBUTE);
         if (ob == null) {
-            Logger.getLogger(ServletUtil.class.getName()).log(Level.WARNING, "Error Messages is null.");
             return;
         }
         Vector<String> vector;
@@ -96,7 +95,6 @@ public final class ServletUtil {
     public static void printSuccessMessages(HttpServletRequest request, JspWriter out) {
         Object ob = request.getAttribute(SUCCESS_MSG_ATTRIBUTE);
         if (ob == null) {
-            Logger.getLogger("ServletUtils").log(Level.WARNING, "Success Messages is null.");
             return;
         }
         Vector<String> vector;

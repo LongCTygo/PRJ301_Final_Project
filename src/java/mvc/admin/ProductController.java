@@ -59,7 +59,7 @@ public class ProductController extends HttpServlet {
         }
         try {
             if (go.equals("view")) {
-                view(request, response);
+                view(request, response, true);
             } else if (go.equals("add")) {
                 add(request, response);
             } else if (go.equals("update")) {
@@ -111,7 +111,7 @@ public class ProductController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void view(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+    private void view(HttpServletRequest request, HttpServletResponse response, boolean isDirect) throws SQLException, ServletException, IOException {
         DAOProduct dao = new DAOProduct();
         String sql = "select * from Product as a join Category as b on a.cateID = b.cateID "
                 + "WHERE a.pname like ? and a.status != ? ORDER BY pid ASC";
@@ -124,7 +124,7 @@ public class ProductController extends HttpServlet {
         prep.setString(1, "%" + query + "%");
         request.setAttribute("query", query);
         //Status
-        String status = request.getParameter("status");
+        String status = isDirect ? request.getParameter("status") : "-1";
         int s;
         try {
             s = Integer.parseInt(status);
@@ -213,6 +213,10 @@ public class ProductController extends HttpServlet {
             }
             view(request, response);
         }
+    }
+    
+    private void view(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        view(request, response, false);
     }
 
 }

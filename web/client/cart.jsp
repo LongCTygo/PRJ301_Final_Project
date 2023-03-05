@@ -101,7 +101,7 @@
                                     <td class="align-middle"><img src="img/<%= pro.getImage()%>" alt="" style="width: 50px;"><a href="ClientController?go=detail&pid=<%= pro.getPid()%>"><%= pro.getPname()%></a></td>
                                     <td class="align-middle"><%= pro.getPriceFormat()%></td>
                                     <td class="align-middle">
-                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                        <div class="input-group quantity mx-auto" style="width: 125px;">
                                             <div class="input-group-btn">
                                                 <button type="button" class="btn btn-sm btn-primary btn-minus" >
                                                     <i class="fa fa-minus"></i>

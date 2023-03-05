@@ -246,20 +246,13 @@ public class ClientController extends HttpServlet {
             toLogin(request, response);
             return;
         }
-        Hashtable<String, Integer> cart = SessionUtil.getCart(session);
         String pid = request.getParameter("pid");
         String a = request.getParameter("amount");
         int amount = a == null ? 1 : Integer.parseInt(a);
         if (amount <= 0) {
             amount = 1;
         }
-        Object value = cart.get(pid);
-        if (value == null) {
-            cart.put(pid, amount);
-        } else {
-            cart.put(pid, (Integer) (value) + amount);
-        }
-        SessionUtil.setCart(session, cart);
+        SessionUtil.addtoCart(session, pid, amount);
         addSuccessMessage(request, "Added to Cart!");
         dispatch(request, response, "ClientController?go=cart");
     }
@@ -274,7 +267,7 @@ public class ClientController extends HttpServlet {
         String remove = request.getParameter("remove");
         //if remove
         if (remove != null) {
-            cart.remove(remove);
+            SessionUtil.removeFromCart(session, remove);
             addSuccessMessage(request, "Removed from Cart!");
         } else {
             //Normal Update
