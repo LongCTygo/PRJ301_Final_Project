@@ -9,7 +9,7 @@ import java.util.Hashtable;
 
 /**
  *
- * @author ADMIN
+ * @author LongCT_, LongCTHE170489
  */
 public final class SessionUtil {
 
