@@ -22,14 +22,7 @@
                 <a href="ClientController?go=home" class="nav-item nav-link <%if (go.equals("home")) {%>active<%}%>">Home</a>
                 <a href="ClientController?go=listShop" class="nav-item nav-link <%if (go.equals("listShop")) {%>active<%}%>">Shop</a>
                 <a href="ClientController?go=detail" class="nav-item nav-link <%if (go.equals("detail")) {%>active<%}%>">Shop Detail</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu rounded-0 m-0">
-                        <a href="ClientController?go=cart" class="dropdown-item <%if (go.equals("cart")) {%>active<%}%>">Shopping Cart</a>
-                        <a href="ClientController?go=checkout" class="dropdown-item <%if (go.equals("checkout")) {%>active<%}%>">Checkout</a>
-                    </div>
-                </div>
-                <a href="ClientController?go=contact" class="nav-item nav-link <%if (go.equals("contact")) {%>active<%}%>">Contact</a>
+                <a href="ClientController?go=cart" class="nav-item nav-link <%if (go.equals("cart")) {%>active<%}%>">Shopping Cart</a>
             </div>
 
             <!-- Login -->

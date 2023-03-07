@@ -230,4 +230,16 @@ public class DAOProduct extends DAOEntity<Product> {
         }
         return null;
     }
+    
+    public Vector<Product> getAllbyCategory(int cateID){
+        try {
+            PreparedStatement statement = this.getPrep("SELECT * from Product where cateID = ?");
+            statement.setInt(1, cateID);
+            Vector<Product> all = this.getAll(statement);
+            return all;
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }
