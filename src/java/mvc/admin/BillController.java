@@ -6,6 +6,7 @@ package mvc.admin;
 
 import dao.DAOBill;
 import display.BillDisplay;
+import entity.Bill;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -63,6 +64,8 @@ public class BillController extends HttpServlet {
                 update(request, response);
             } else if (go.equals("delete")) {
                 delete(request, response);
+            } else if (go.equals("updateStatus")) {
+                updateStatus(request, response);
             } else {
                 view(request, response, true);
             }
@@ -131,7 +134,7 @@ public class BillController extends HttpServlet {
         try {
             s = Integer.parseInt(status);
             if (s >= 0 && s <= 2) {
-                for (int i = 2; i < 5; i++){
+                for (int i = 2; i < 5; i++) {
                     prep.setInt(i, s);
                 }
             } else {
@@ -140,7 +143,7 @@ public class BillController extends HttpServlet {
         } catch (NumberFormatException ex) {
             isSearchAll = true;
         }
-        if (isSearchAll){
+        if (isSearchAll) {
             prep.setInt(2, 0);
             prep.setInt(3, 1);
             prep.setInt(4, 2);
@@ -183,4 +186,27 @@ public class BillController extends HttpServlet {
         view(request, response, false);
     }
 
+    private void updateStatus(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        String s = request.getParameter("status");
+        String billID = request.getParameter("bill");
+        try {
+            int status = Integer.parseInt(s);
+            if (status >= 0 && status <= 2) {
+                DAOBill dao = new DAOBill();
+                Bill bill = dao.get(billID);
+                if (bill != null) {
+                    bill.setStatus(status);
+                    dao.update(bill);
+                    ServletUtil.addSuccessMessage(request, "Successfully modified the bill " + billID);
+                } else {
+                    ServletUtil.addErrorMessage(request, "Could not find a bill with billid = " + billID);
+                }
+            } else {
+                ServletUtil.addErrorMessage(request, "Status cannot be " + status);
+            }
+        } catch (NumberFormatException ex) {
+            ServletUtil.addErrorMessage(request, "Couldn't update, status is invalid.");
+        }
+        view(request, response);
+    }
 }

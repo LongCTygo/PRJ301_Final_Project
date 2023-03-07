@@ -4,13 +4,14 @@
     Author     : ADMIN
 --%>
 
+<%@page import="display.BillDisplay"%>
 <%@page import="entity.Bill"%>
 <%@page import="display.BillDetailDisplay"%>
 <%@page import="java.util.Vector"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     Vector<BillDetailDisplay> list = (Vector<BillDetailDisplay>) request.getAttribute("list");
-    Bill bill = (Bill) request.getAttribute("bill");
+    BillDisplay bill = (BillDisplay) request.getAttribute("bill");
 %>
 <!DOCTYPE html>
 <html>
@@ -24,6 +25,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-8">
+                        <h3 class="text-center">Bill Details</h3>
                         <table class="table table-hover table-sm table-striped">
                             <thead class="thead-dark ">
                                 <tr>
@@ -50,7 +52,28 @@
                     </table>
                 </div>
                 <div class="col-4">
-                    admin
+                    <div class="container">
+                        <p>Bill ID: <%= bill.getBid()%></p>
+                        <p>Customer ID: <%= bill.getCid()%></p>
+                        <p>Customer Username: <%= bill.getUsername()%></p>
+                        <p>Customer Name: <%= bill.getCname()%></p>
+                        <p>Current Bill Status: <%= status(bill.getStatus()) %></p>
+                        <form action="BillController" method="post">
+                            <input type="hidden" name="go" value="updateStatus">
+                            <input type="hidden" name="bill" value="<%= bill.getBid() %>">
+                            <div class="form-group row">
+                                <label for="status" class="col-4 col-form-label">Bill Status</label> 
+                                <div class="col-8">
+                                    <select id="select" name="status" class="custom-select" required="required">
+                                        <option value="0" <%= bill.getStatus() == 0 ? "selected" : "" %>>Wait</option>
+                                        <option value="1" <%= bill.getStatus() == 1 ? "selected" : "" %>>Process</option>
+                                        <option value="2" <%= bill.getStatus() == 2 ? "selected" : "" %>>Done</option>
+                                    </select>
+                                </div>
+                                    <button type="submit" class="btn-success">Update Status</button>
+                            </div> 
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,3 +95,14 @@
         <script src="js/main.js"></script>
     </body>
 </html>
+
+<%!
+    private String status(int s) {
+        if (s == 1) {
+            return "<span class=\"badge badge-pill badge-info\">Process</span>";
+        } else if (s==2){
+            return "<span class=\"badge badge-pill badge-success\">Done</span>";
+}
+        return "<span class=\"badge badge-pill badge-warning\">Wait</span>";
+    }
+%>

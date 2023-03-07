@@ -90,9 +90,9 @@
                         </label>
                     </div>
                         <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" value="2" id="Finished" <%= s == 2 ? "checked" : ""%>>
-                        <label class="form-check-label" for="Finished">
-                            Finished
+                        <input class="form-check-input" type="radio" name="status" value="2" id="Done" <%= s == 2 ? "checked" : ""%>>
+                        <label class="form-check-label" for="Done">
+                            Done
                         </label>
                     </div>
                 </form>

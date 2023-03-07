@@ -96,15 +96,9 @@ public class ClientController extends HttpServlet {
                 review(request, response, session);
             } else if (go.equals("register")) {
                 register(request, response);
-            } else {
-                request.setAttribute("context", "404");
-                dispatch(request, response, "ErrorPage");
             }
         } catch (Exception ex) {
             Logger.getLogger(DAOProduct.class.getName()).log(Level.SEVERE, null, ex);
-            request.setAttribute("context", "exception");
-            request.setAttribute("exception", ex);
-            dispatch(request, response, "ErrorPage");
         }
     }
 

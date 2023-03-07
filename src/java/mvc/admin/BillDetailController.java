@@ -7,6 +7,7 @@ package mvc.admin;
 import dao.DAOBill;
 import dao.DAOBillDetail;
 import display.BillDetailDisplay;
+import display.BillDisplay;
 import entity.Bill;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import utils.SessionUtil;
 @WebServlet(name = "BillDetailController", urlPatterns = {"/BillDetailController"})
 public class BillDetailController extends HttpServlet {
 
-    public static final String DEFAULT_GO = "view";
+    public static final String DEFAULT_GO = "viewDetail";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -58,18 +59,10 @@ public class BillDetailController extends HttpServlet {
             go = DEFAULT_GO;
         }
         try {
-            if (go.equals("view")) {
-                view(request, response, true);
-            } else if (go.equals("viewDetail")) {
+            if (go.equals("viewDetail")) {
                 viewDetail(request, response);
-            } else if (go.equals("add")) {
-                add(request, response);
-            } else if (go.equals("update")) {
-                update(request, response);
-            } else if (go.equals("delete")) {
-                delete(request, response);
             } else {
-                view(request, response, true);
+                viewDetail(request, response);
             }
         } catch (SQLException ex) {
             Logger.getLogger(CustomerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,22 +108,6 @@ public class BillDetailController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void view(HttpServletRequest request, HttpServletResponse response, boolean b) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void add(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void update(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void delete(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
     private void viewDetail(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
         //Get the bill
         String bid = request.getParameter("id");
@@ -150,4 +127,6 @@ public class BillDetailController extends HttpServlet {
         request.setAttribute("list", billDetails);
         dispatch(request, response, "admin/billDetail.jsp");
     }
+
+    
 }
