@@ -119,6 +119,7 @@
                     </div>
                     <h3 class="font-weight-semi-bold mb-4"><%=p.getPriceFormat()%></h3>
                     <p class="mb-4"><%=p.getDescription()%></p>
+                    <h6 class="font-weight-semi-bold mb-4">In stock: <%= p.getQuantity()%></h6>
                     <div class="d-flex align-items-center mb-4 pt-2">
                         <form action="ClientController">
                             <input type="hidden" name="go" value="addCart">
@@ -248,7 +249,7 @@
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3"><%=sug.getPname()%></h6>
                                 <h6 style="color:red" class="text-truncate mb-3">
-                                    <%if (sug.getQuantity() == 0) {%>Sold Out<%} else {%>Stock: <%=p.getQuantity()%><%}%>
+                                    <%if (sug.getQuantity() == 0) {%>Sold Out<%} else {%>Stock: <%=sug.getQuantity()%><%}%>
                                 </h6>
                                 <div class="d-flex justify-content-center">
                                     <h6><%=sug.getPriceFormat()%></h6>

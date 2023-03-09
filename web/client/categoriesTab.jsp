@@ -23,6 +23,7 @@
         </a>
         <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 1;">
             <div class="navbar-nav w-100 overflow-hidden" style="height: <%=vecCat.size()*40%>px">
+                <a href="ClientController?go=listShop" class="nav-item nav-link">All Categories</a>
                 <%
                     for (Category cat: vecCat){
                 %>

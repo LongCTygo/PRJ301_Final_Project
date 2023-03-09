@@ -11,6 +11,7 @@
     DAOCategory daoCat = new DAOCategory();
     Vector<Category> catList = daoCat.getAll();
     String query = (String) request.getAttribute("query");
+    String cateid = request.getParameter("cateid");
     
 %>
 <!DOCTYPE html>
@@ -142,6 +143,9 @@
                                 <form name="searchbar" action="ClientController">
                                     <input  type="hidden" name="go" value="listShop">
                                     <div class="input-group">
+                                        <% if (cateid!=null){
+                                            out.print("<input type=\"hidden\" name=\"cateid\" value=\""+cateid+"\">");
+                                            }%>
                                         <input type="text" class="form-control" name="query" placeholder="Search by name" value="<%=query%>">
                                         <div class="input-group-append">
                                             <span onclick="searchbar.submit()" class="input-group-text bg-transparent text-primary">

@@ -29,7 +29,7 @@
                     <a class="nav-item nav-link" href="CategoryController?go=view">Category</a>
                     <a class="nav-item nav-link" href="CustomerController?go=view">Customer</a>
                     <a class="nav-item nav-link" href="ProductController?go=view">Product</a>
-                    <a class="nav-item nav-link" href="ReviewController?go=view">Review</a>
+                    <!--<a class="nav-item nav-link" href="ReviewController?go=view">Review</a>-->
                 </div>
             </div>
             <div class="text-right">
