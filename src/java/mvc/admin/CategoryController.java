@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
@@ -148,7 +147,7 @@ public class CategoryController extends HttpServlet {
             int n = dao.add(cat);
             if (n == 1) {
                 ServletUtil.addSuccessMessage(request, "Successfully added category " + cat.getCateId() + ".");
-            } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+            } else if (n == 2627) {
                 ServletUtil.addErrorMessage(request, "Failed to add category " + cat.getCateId() + " since a category with such ID already exist.");
             } else {
                 ServletUtil.addErrorMessage(request, "Failed to add category " + cat.getCateId() + ". Error = " + n + ".");

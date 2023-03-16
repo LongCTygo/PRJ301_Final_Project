@@ -32,7 +32,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.addErrorMessage;
 import static utils.ServletUtil.addSuccessMessage;
@@ -424,7 +423,7 @@ public class ClientController extends HttpServlet {
             int score = Integer.parseInt(request.getParameter("score"));
             Review review = new Review(cid, pid, re, score);
             int n = dao.add(review);
-            if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+            if (n == 2627) {
                 System.out.println("Unique Key Violation");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String now = sdf.format(new Date());
@@ -452,7 +451,7 @@ public class ClientController extends HttpServlet {
             if (n == 1) {
                 addSuccessMessage(request, "Registered Successfully");
                 dispatch(request, response, "client/login.jsp");
-            } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+            } else if (n == 2627) {
                 addErrorMessage(request, "An user with that username already exists.");
                 dispatch(request, response, "client/register.jsp");
             } else {

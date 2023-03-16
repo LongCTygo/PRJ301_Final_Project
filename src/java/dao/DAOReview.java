@@ -149,7 +149,7 @@ public class DAOReview extends DAOEntity<Review> {
                 String date = rs.getString(3);
                 int score = rs.getInt(4);
                 String comment = rs.getString(5);
-                Review r = new Review(cid, pid, date, score, date);
+                Review r = new Review(cid, pid, comment, score, date);
                 vector.add(r);
             }
         } catch (SQLException ex) {

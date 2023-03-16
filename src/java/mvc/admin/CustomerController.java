@@ -18,10 +18,11 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
+
+
 
 /**
  *
@@ -29,9 +30,8 @@ import utils.SessionUtil;
  */
 @WebServlet(name = "CustomerController", urlPatterns = {"/CustomerController"})
 public class CustomerController extends HttpServlet {
-
-    public static String DEFAULT_GO = "view";
-
+    public static final String DEFAULT_GO = "view";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -157,7 +157,7 @@ public class CustomerController extends HttpServlet {
             int n = dao.add(cus);
             if (n == 1) {
                 ServletUtil.addSuccessMessage(request, "Successfully added user " + cus.getCid() + ".");
-            } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+            } else if (n == 2627) {
                 ServletUtil.addErrorMessage(request, "Failed to add user " + cus.getCid() + " since an user with such ID already exist.");
             } else {
                 ServletUtil.addErrorMessage(request, "Failed to add user " + cus.getCid() + ". Error = " + n + ".");

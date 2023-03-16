@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utils.SQLErrorCodeUtil;
 import utils.ServletUtil;
 import static utils.ServletUtil.dispatch;
 import utils.SessionUtil;
@@ -44,7 +43,6 @@ public class ProductController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
         if (!SessionUtil.isSessionAdmin(session)) {
@@ -160,7 +158,7 @@ public class ProductController extends HttpServlet {
                 int n = dao.add(pro);
                 if (n == 1) {
                     ServletUtil.addSuccessMessage(request, "Successfully added product " + pro.getPid() + ".");
-                } else if (n == SQLErrorCodeUtil.UNIQUE_KEY_VIOLATION) {
+                } else if (n == 2627) {
                     ServletUtil.addErrorMessage(request, "Failed to add product " + pro.getPid() + " since a product with such ID already exist.");
                 } else {
                     ServletUtil.addErrorMessage(request, "Failed to add product " + pro.getPid() + ". Error = " + n + ".");
