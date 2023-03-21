@@ -12,6 +12,7 @@
 <%
     Vector<BillDetailDisplay> list = (Vector<BillDetailDisplay>) request.getAttribute("list");
     BillDisplay bill = (BillDisplay) request.getAttribute("bill");
+    double sum = 0;
 %>
 <!DOCTYPE html>
 <html>
@@ -38,7 +39,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            <% for (BillDetailDisplay b : list) {%>
+                            <% for (BillDetailDisplay b : list) {
+                                    sum += b.getSubtotal();
+                            %>
                             <tr>
                                 <td scope="row"><%= b.getPid()%></td>
                                 <td><%= b.getPname()%>  </td>
@@ -57,22 +60,27 @@
                         <p>Customer ID: <%= bill.getCid()%></p>
                         <p>Customer Username: <%= bill.getUsername()%></p>
                         <p>Customer Name: <%= bill.getCname()%></p>
-                        <p>Current Bill Status: <%= status(bill.getStatus()) %></p>
+                        <p>Current Bill Status: <%= status(bill.getStatus())%></p>
+                        <h4>Total: <%= String.format("$%2.2f", sum)%></h4>
                         <form action="BillController" method="post">
                             <input type="hidden" name="go" value="updateStatus">
-                            <input type="hidden" name="bill" value="<%= bill.getBid() %>">
+                            <input type="hidden" name="bill" value="<%= bill.getBid()%>">
                             <div class="form-group row">
                                 <label for="status" class="col-4 col-form-label">Bill Status</label> 
                                 <div class="col-8">
                                     <select id="select" name="status" class="custom-select" required="required">
-                                        <option value="0" <%= bill.getStatus() == 0 ? "selected" : "" %>>Wait</option>
-                                        <option value="1" <%= bill.getStatus() == 1 ? "selected" : "" %>>Process</option>
-                                        <option value="2" <%= bill.getStatus() == 2 ? "selected" : "" %>>Done</option>
+                                        <% if (bill.getStatus() <= 0) {%><option value="0" <%= bill.getStatus() == 0 ? "selected" : ""%>>Wait</option><%}%>
+                                        <% if (bill.getStatus() <= 1) {%><option value="1" <%= bill.getStatus() == 1 ? "selected" : ""%>>Process</option><%}%>
+                                        <% if (bill.getStatus() <= 2) {%><option value="2" <%= bill.getStatus() == 2 ? "selected" : ""%>>Done</option><%}%>
                                     </select>
                                 </div>
-                                    <button type="submit" class="btn-success">Update Status</button>
+                                <button type="submit" class="btn-success">Update Status</button>
+
                             </div> 
                         </form>
+                        <% if (bill.getStatus() == 0) {%>
+                        <a class="btn-danger p-2" href="BillController?go=delete&id=<%= bill.getBid()%>">Remove Bill</a>
+                        <%}%>
                     </div>
                 </div>
             </div>
@@ -100,9 +108,9 @@
     private String status(int s) {
         if (s == 1) {
             return "<span class=\"badge badge-pill badge-info\">Process</span>";
-        } else if (s==2){
+        } else if (s == 2) {
             return "<span class=\"badge badge-pill badge-success\">Done</span>";
-}
+        }
         return "<span class=\"badge badge-pill badge-warning\">Wait</span>";
     }
 %>

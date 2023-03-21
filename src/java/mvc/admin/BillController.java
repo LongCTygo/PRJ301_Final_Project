@@ -167,17 +167,23 @@ public class BillController extends HttpServlet {
         String id = request.getParameter("id");
         if (id != null) {
             DAOBill dao = new DAOBill();
-            ///Remove bill details
-            PreparedStatement statement = dao.getPrep("DELETE FROM BillDetail where bid = ?");
-            statement.setString(1, id);
-            statement.execute();
-            //Remove the bill
-            int n = dao.remove(id);
-            if (n == 1) {
-                ServletUtil.addSuccessMessage(request, "Successfully remove Bill with ID = " + id + ".");
+            BillDisplay bill = dao.get(id);
+            if (bill.getStatus() == 0) {
+                ///Remove bill details
+                PreparedStatement statement = dao.getPrep("DELETE FROM BillDetail where bid = ?");
+                statement.setString(1, id);
+                statement.execute();
+                //Remove the bill
+                int n = dao.remove(id);
+                if (n == 1) {
+                    ServletUtil.addSuccessMessage(request, "Successfully remove Bill with ID = " + id + ".");
+                } else {
+                    ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
+                }
             } else {
-                ServletUtil.addErrorMessage(request, "Failed to delete, likely due to exisiting relationship.");
+                ServletUtil.addErrorMessage(request, "You can only remove Bill that has the status 'Wait'.");
             }
+
         }
         view(request, response);
     }
@@ -195,9 +201,13 @@ public class BillController extends HttpServlet {
                 DAOBill dao = new DAOBill();
                 Bill bill = dao.get(billID);
                 if (bill != null) {
-                    bill.setStatus(status);
-                    dao.update(bill);
-                    ServletUtil.addSuccessMessage(request, "Successfully modified the bill " + billID);
+                    if (bill.getStatus() > status) {
+                        ServletUtil.addErrorMessage(request, "You cannot change the status from " + bill.getStatus() + " to " + status + ".");
+                    } else {
+                        bill.setStatus(status);
+                        dao.update(bill);
+                        ServletUtil.addSuccessMessage(request, "Successfully modified the bill " + billID);
+                    }
                 } else {
                     ServletUtil.addErrorMessage(request, "Could not find a bill with billid = " + billID);
                 }

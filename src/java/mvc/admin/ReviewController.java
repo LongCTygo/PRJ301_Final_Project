@@ -89,7 +89,12 @@ public class ReviewController extends HttpServlet {
         String cid = request.getParameter("cid");
         String pid = request.getParameter("pid");
         DAOReview dao = new DAOReview();
-        dao.remove(pid, cid);
+        int n = dao.remove(pid, cid);
+        if (n == 1){
+            ServletUtil.addSuccessMessage(request, "Removed review by " + cid + " for " + pid +".");
+        } else {
+            ServletUtil.addErrorMessage(request, "Failed to delete review.");
+        }
         view(request, response);
     }
 

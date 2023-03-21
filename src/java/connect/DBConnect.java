@@ -21,7 +21,7 @@ public class DBConnect {
     
     static final String DB_NAME = "FinalProjectShop";
     static final String USER = "sa";
-    static final String PASSWORD = "123456";
+    static final String PASSWORD = "12345678";
     
     public Connection conn = null;
     

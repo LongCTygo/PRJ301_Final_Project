@@ -41,7 +41,7 @@
                             <th scope="col">Date</th>
                             <th scope="col">Total</th>
                             <th scope="col">Status</th>
-                            <th scope="col" colspan="2" class="text-center">Action</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,7 +53,6 @@
                             <td><%= cus.getTotalMoney()%></td>
                             <td class="text-center"><%= status(cus.getStatus()) %></td>
                             <td class="text-center"><a href="BillDetailController?go=viewDetail&id=<%= cus.getBid()%>" type="button" class="btn btn-primary">Detail</a></td>
-                            <td class="text-center"><a href="BillController?go=delete&id=<%= cus.getBid()%>" type="button" class="btn btn-danger">Remove</a></td>
                         </tr>
                         <%}%>
                     </tbody>
