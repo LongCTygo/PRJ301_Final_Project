@@ -5,9 +5,8 @@
 “Code” refers to:
 1. Any file found in the '.../src/...' or '.../test/...' folder
 2. Any .jsp or .html files located in the '.../web/admin/...' folder
-3. Any .jsp or .html files located in the '.../web/admin/...' folder
-4. Context/Config files, including the context.xml file.
-5. Build scripts
+3. Context/Config files, including the context.xml file.
+4. Build scripts for NetBeans IDE, .gitignore file
 
 ### 1. Code
   Per the definitions above, Code is licensed under the “MIT” License, found below
@@ -18,4 +17,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### 2. Non-Code
 
- Per the definitions above, everything that is not defined as Code is subjected to LICENSE.txt by HTML Codex.
+Per the definitions above, everything that is not defined as Code is subjected to LICENSE.txt by HTML Codex.
